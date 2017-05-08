@@ -1,0 +1,218 @@
+var _user$project$PieChart$polarToCart = F3(
+	function (center, radius, angle) {
+		var angleRad = ((angle - 90) * _elm_lang$core$Basics$pi) / 180;
+		var x = _elm_lang$core$Tuple$first(center) + (radius * _elm_lang$core$Basics$cos(angleRad));
+		var y = _elm_lang$core$Tuple$second(center) + (radius * _elm_lang$core$Basics$sin(angleRad));
+		return {ctor: '_Tuple2', _0: x, _1: y};
+	});
+var _user$project$PieChart$arc = F4(
+	function (center, radius, start, end) {
+		var large = (_elm_lang$core$Native_Utils.cmp(end - start, 180) < 1) ? '0' : '1';
+		var endCoor = A3(_user$project$PieChart$polarToCart, center, radius, start);
+		var endX = _elm_lang$core$Basics$toString(
+			_elm_lang$core$Tuple$first(endCoor));
+		var endY = _elm_lang$core$Basics$toString(
+			_elm_lang$core$Tuple$second(endCoor));
+		var startCoor = A3(_user$project$PieChart$polarToCart, center, radius, end);
+		var startX = _elm_lang$core$Basics$toString(
+			_elm_lang$core$Tuple$first(startCoor));
+		var startY = _elm_lang$core$Basics$toString(
+			_elm_lang$core$Tuple$second(startCoor));
+		var centerY = _elm_lang$core$Basics$toString(
+			_elm_lang$core$Tuple$second(center));
+		var centerX = _elm_lang$core$Basics$toString(
+			_elm_lang$core$Tuple$first(center));
+		var res = A2(
+			_elm_lang$core$String$join,
+			' ',
+			{
+				ctor: '::',
+				_0: 'M',
+				_1: {
+					ctor: '::',
+					_0: centerX,
+					_1: {
+						ctor: '::',
+						_0: centerY,
+						_1: {
+							ctor: '::',
+							_0: 'L',
+							_1: {
+								ctor: '::',
+								_0: startX,
+								_1: {
+									ctor: '::',
+									_0: startY,
+									_1: {
+										ctor: '::',
+										_0: 'A',
+										_1: {
+											ctor: '::',
+											_0: centerX,
+											_1: {
+												ctor: '::',
+												_0: centerY,
+												_1: {
+													ctor: '::',
+													_0: '0',
+													_1: {
+														ctor: '::',
+														_0: large,
+														_1: {
+															ctor: '::',
+															_0: '0',
+															_1: {
+																ctor: '::',
+																_0: endX,
+																_1: {
+																	ctor: '::',
+																	_0: endY,
+																	_1: {
+																		ctor: '::',
+																		_0: 'Z',
+																		_1: {ctor: '[]'}
+																	}
+																}
+															}
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			});
+		return res;
+	});
+var _user$project$PieChart$randColor = function (s) {
+	var gen = A2(_elm_lang$core$Random$int, 20, 99);
+	var seed = _elm_lang$core$Random$initialSeed(s);
+	var rt = A2(_elm_lang$core$Random$step, gen, seed);
+	var r = _elm_lang$core$Tuple$first(rt);
+	var gt = A2(
+		_elm_lang$core$Random$step,
+		gen,
+		_elm_lang$core$Tuple$second(rt));
+	var g = _elm_lang$core$Tuple$first(gt);
+	var bt = A2(
+		_elm_lang$core$Random$step,
+		gen,
+		_elm_lang$core$Tuple$second(gt));
+	var b = _elm_lang$core$Tuple$first(bt);
+	var msg = A2(
+		_elm_lang$core$Debug$log,
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			_elm_lang$core$Basics$toString(r),
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				_elm_lang$core$Basics$toString(g),
+				_elm_lang$core$Basics$toString(b))),
+		0);
+	return A2(
+		_elm_lang$core$Basics_ops['++'],
+		'#',
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			_elm_lang$core$Basics$toString(r),
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				_elm_lang$core$Basics$toString(g),
+				_elm_lang$core$Basics$toString(b))));
+};
+var _user$project$PieChart$dataSum = function (slices) {
+	return _elm_lang$core$List$sum(
+		A2(
+			_elm_lang$core$List$map,
+			function (slice) {
+				return slice.value;
+			},
+			slices));
+};
+var _user$project$PieChart$slices = F3(
+	function (model, iter, prev) {
+		if (_elm_lang$core$Native_Utils.cmp(
+			iter,
+			_elm_lang$core$List$length(model.data)) > -1) {
+			return {ctor: '[]'};
+		} else {
+			var slice = A2(
+				_elm_lang$core$Array$get,
+				iter,
+				_elm_lang$core$Array$fromList(model.data));
+			var _p0 = slice;
+			if (_p0.ctor === 'Just') {
+				var start = prev;
+				var normalizedValue = _p0._0.value / _user$project$PieChart$dataSum(model.data);
+				var end = prev + (normalizedValue * 360);
+				var radius = _elm_lang$core$Basics$toFloat(
+					A2(_elm_lang$core$Basics$min, model.width, model.height)) / 2;
+				var center = {ctor: '_Tuple2', _0: radius, _1: radius};
+				return {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$svg$Svg$path,
+						{
+							ctor: '::',
+							_0: _elm_lang$svg$Svg_Attributes$d(
+								A4(_user$project$PieChart$arc, center, radius, start, end)),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$svg$Svg_Attributes$stroke('transparent'),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$svg$Svg_Attributes$fill(
+										_user$project$PieChart$randColor(iter)),
+									_1: {ctor: '[]'}
+								}
+							}
+						},
+						{ctor: '[]'}),
+					_1: A3(_user$project$PieChart$slices, model, iter + 1, end)
+				};
+			} else {
+				return {ctor: '[]'};
+			}
+		}
+	});
+var _user$project$PieChart$view = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{ctor: '[]'},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$svg$Svg$svg,
+				{
+					ctor: '::',
+					_0: _elm_lang$svg$Svg_Attributes$width(
+						_elm_lang$core$Basics$toString(model.width)),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$svg$Svg_Attributes$height(
+							_elm_lang$core$Basics$toString(model.height)),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$svg$Svg_Attributes$viewBox(
+								A2(
+									_elm_lang$core$Basics_ops['++'],
+									'0 0 ',
+									A2(
+										_elm_lang$core$Basics_ops['++'],
+										_elm_lang$core$Basics$toString(model.width),
+										A2(
+											_elm_lang$core$Basics_ops['++'],
+											' ',
+											_elm_lang$core$Basics$toString(model.height))))),
+							_1: {ctor: '[]'}
+						}
+					}
+				},
+				A3(_user$project$PieChart$slices, model, 0, 0)),
+			_1: {ctor: '[]'}
+		});
+};

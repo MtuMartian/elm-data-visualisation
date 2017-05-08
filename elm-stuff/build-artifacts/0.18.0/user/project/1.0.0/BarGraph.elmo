@@ -1,0 +1,233 @@
+var _user$project$BarGraph$bars = F2(
+	function (model, iter) {
+		if (_elm_lang$core$Native_Utils.cmp(
+			iter,
+			_elm_lang$core$List$length(model.data)) > -1) {
+			return {ctor: '[]'};
+		} else {
+			var bar = A2(
+				_elm_lang$core$Array$get,
+				iter,
+				_elm_lang$core$Array$fromList(model.data));
+			var _p0 = bar;
+			if (_p0.ctor === 'Just') {
+				var _p3 = _p0._0;
+				var _p1 = model.range;
+				if (_p1.ctor === 'Just') {
+					var _p2 = _p1._0;
+					var max = _elm_lang$core$Tuple$second(_p2);
+					var min = _elm_lang$core$Tuple$first(_p2);
+					var normalizer = (_p3.value - min) / (max - min);
+					var height = model.height - _elm_lang$core$Basics$truncate(
+						_elm_lang$core$Basics$toFloat(model.height) * normalizer);
+					var highlightModifier = _p3.isHighlighted ? 5 : 0;
+					var margin = 10 - highlightModifier;
+					var width = (((model.width - 20) / _elm_lang$core$List$length(model.data)) | 0) - margin;
+					var xCoor = (_elm_lang$core$Basics$toFloat(width + margin) * (_elm_lang$core$Basics$toFloat(iter) + (1 / 2))) + 20;
+					return {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$svg$Svg$line,
+							{
+								ctor: '::',
+								_0: _elm_lang$svg$Svg_Attributes$y1(
+									_elm_lang$core$Basics$toString(model.height - 10)),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$svg$Svg_Attributes$y2(
+										_elm_lang$core$Basics$toString(height)),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$svg$Svg_Attributes$x1(
+											_elm_lang$core$Basics$toString(xCoor)),
+										_1: {
+											ctor: '::',
+											_0: _elm_lang$svg$Svg_Attributes$x2(
+												_elm_lang$core$Basics$toString(xCoor)),
+											_1: {
+												ctor: '::',
+												_0: _elm_lang$svg$Svg_Attributes$strokeWidth(
+													_elm_lang$core$Basics$toString(width)),
+												_1: {
+													ctor: '::',
+													_0: _elm_lang$svg$Svg_Attributes$stroke('black'),
+													_1: {
+														ctor: '::',
+														_0: _elm_lang$svg$Svg_Events$onMouseOver(
+															_user$project$Msgs$DataMouseOver(_p3)),
+														_1: {
+															ctor: '::',
+															_0: _elm_lang$svg$Svg_Events$onMouseOut(
+																_user$project$Msgs$DataMouseExit(_p3)),
+															_1: {ctor: '[]'}
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							},
+							{ctor: '[]'}),
+						_1: A2(_user$project$BarGraph$bars, model, iter + 1)
+					};
+				} else {
+					return {ctor: '[]'};
+				}
+			} else {
+				return {ctor: '[]'};
+			}
+		}
+	});
+var _user$project$BarGraph$ticks = F3(
+	function (model, iter, total) {
+		if (_elm_lang$core$Native_Utils.cmp(iter, total) > -1) {
+			return {ctor: '[]'};
+		} else {
+			var height = _elm_lang$core$Basics$toString(((model.height * iter) / total) | 0);
+			return {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$svg$Svg$line,
+					{
+						ctor: '::',
+						_0: _elm_lang$svg$Svg_Attributes$x1('0'),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$svg$Svg_Attributes$x2('20'),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$svg$Svg_Attributes$y1(height),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$svg$Svg_Attributes$y2(height),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$svg$Svg_Attributes$strokeWidth('2'),
+										_1: {
+											ctor: '::',
+											_0: _elm_lang$svg$Svg_Attributes$stroke('black'),
+											_1: {ctor: '[]'}
+										}
+									}
+								}
+							}
+						}
+					},
+					{ctor: '[]'}),
+				_1: A3(_user$project$BarGraph$ticks, model, iter + 1, total)
+			};
+		}
+	});
+var _user$project$BarGraph$axes = function (model) {
+	return A2(
+		_elm_lang$core$List$append,
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$svg$Svg$line,
+				{
+					ctor: '::',
+					_0: _elm_lang$svg$Svg_Attributes$x1('10'),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$svg$Svg_Attributes$x2('10'),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$svg$Svg_Attributes$y1('0'),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$svg$Svg_Attributes$y2(
+									_elm_lang$core$Basics$toString(model.height - 10)),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$svg$Svg_Attributes$strokeWidth('2'),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$svg$Svg_Attributes$stroke('black'),
+										_1: {ctor: '[]'}
+									}
+								}
+							}
+						}
+					}
+				},
+				{ctor: '[]'}),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$svg$Svg$line,
+					{
+						ctor: '::',
+						_0: _elm_lang$svg$Svg_Attributes$x1('10'),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$svg$Svg_Attributes$x2(
+								_elm_lang$core$Basics$toString(model.width - 10)),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$svg$Svg_Attributes$y1(
+									_elm_lang$core$Basics$toString(model.height - 10)),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$svg$Svg_Attributes$y2(
+										_elm_lang$core$Basics$toString(model.height - 10)),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$svg$Svg_Attributes$strokeWidth('2'),
+										_1: {
+											ctor: '::',
+											_0: _elm_lang$svg$Svg_Attributes$stroke('black'),
+											_1: {ctor: '[]'}
+										}
+									}
+								}
+							}
+						}
+					},
+					{ctor: '[]'}),
+				_1: {ctor: '[]'}
+			}
+		},
+		A3(_user$project$BarGraph$ticks, model, 0, 6));
+};
+var _user$project$BarGraph$view = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{ctor: '[]'},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$svg$Svg$svg,
+				{
+					ctor: '::',
+					_0: _elm_lang$svg$Svg_Attributes$width(
+						_elm_lang$core$Basics$toString(model.width)),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$svg$Svg_Attributes$height(
+							_elm_lang$core$Basics$toString(model.height)),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$svg$Svg_Attributes$viewBox(
+								A2(
+									_elm_lang$core$Basics_ops['++'],
+									'0 0 ',
+									A2(
+										_elm_lang$core$Basics_ops['++'],
+										_elm_lang$core$Basics$toString(model.width),
+										A2(
+											_elm_lang$core$Basics_ops['++'],
+											' ',
+											_elm_lang$core$Basics$toString(model.height))))),
+							_1: {ctor: '[]'}
+						}
+					}
+				},
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					_user$project$BarGraph$axes(model),
+					A2(_user$project$BarGraph$bars, model, 0))),
+			_1: {ctor: '[]'}
+		});
+};

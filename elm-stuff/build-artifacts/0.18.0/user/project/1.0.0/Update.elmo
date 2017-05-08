@@ -1,0 +1,40 @@
+var _user$project$Update$update = F2(
+	function (msg, model) {
+		var _p0 = msg;
+		switch (_p0.ctor) {
+			case 'DataClicked':
+				var updatedModel = _elm_lang$core$Native_Utils.update(
+					model,
+					{
+						data: {ctor: '[]'}
+					});
+				var test = A2(_elm_lang$core$Debug$log, 'data clicked', 0);
+				return {ctor: '_Tuple2', _0: updatedModel, _1: _elm_lang$core$Platform_Cmd$none};
+			case 'DataMouseOver':
+				var updatedData = A2(
+					_elm_lang$core$List$map,
+					function (x) {
+						return _elm_lang$core$Native_Utils.eq(x.id, _p0._0.id) ? _elm_lang$core$Native_Utils.update(
+							x,
+							{isHighlighted: true}) : x;
+					},
+					model.data);
+				var updatedModel = _elm_lang$core$Native_Utils.update(
+					model,
+					{data: updatedData});
+				return {ctor: '_Tuple2', _0: updatedModel, _1: _elm_lang$core$Platform_Cmd$none};
+			default:
+				var updatedData = A2(
+					_elm_lang$core$List$map,
+					function (x) {
+						return _elm_lang$core$Native_Utils.eq(x.id, _p0._0.id) ? _elm_lang$core$Native_Utils.update(
+							x,
+							{isHighlighted: false}) : x;
+					},
+					model.data);
+				var updatedModel = _elm_lang$core$Native_Utils.update(
+					model,
+					{data: updatedData});
+				return {ctor: '_Tuple2', _0: updatedModel, _1: _elm_lang$core$Platform_Cmd$none};
+		}
+	});

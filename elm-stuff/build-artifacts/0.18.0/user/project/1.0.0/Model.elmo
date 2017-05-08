@@ -1,0 +1,10 @@
+var _user$project$Model$Model = F6(
+	function (a, b, c, d, e, f) {
+		return {chartType: a, data: b, label: c, height: d, width: e, range: f};
+	});
+var _user$project$Model$DataModel = F4(
+	function (a, b, c, d) {
+		return {id: a, value: b, label: c, isHighlighted: d};
+	});
+var _user$project$Model$PieChart = {ctor: 'PieChart'};
+var _user$project$Model$BarGraph = {ctor: 'BarGraph'};

@@ -1,0 +1,7 @@
+var _user$project$Msgs$DataMouseExit = function (a) {
+	return {ctor: 'DataMouseExit', _0: a};
+};
+var _user$project$Msgs$DataMouseOver = function (a) {
+	return {ctor: 'DataMouseOver', _0: a};
+};
+var _user$project$Msgs$DataClicked = {ctor: 'DataClicked'};

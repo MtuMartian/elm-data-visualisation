@@ -37,13 +37,20 @@ view model =
 axes : Model -> List (Svg Msg)
 axes model =
   List.append
-    [ line
+    [ Svg.defs []
+      [ Svg.filter [ id "shadow" ]
+          [ feGaussianBlur [stdDeviation "2, 0"] []
+          , feColorMatrix [ in_ "BackgroundImage", type_ "saturate", values "2.0"] []
+          ]
+      ]
+    , line
       [ x1 "10"
       , x2 "10"
       , y1 "0"
       , y2 (toString (model.height - 10))
       , strokeWidth "2"
       , stroke "black"
+      --, Svg.Attributes.filter "url(#blur)"
       ]
       []
     , line
@@ -93,18 +100,41 @@ bars model iter =
                 margin = 10 - highlightModifier
                 width = (model.width - 20) // (List.length model.data) - margin
                 xCoor = (toFloat (width + margin)) * ((toFloat iter) + 1 / 2) + 20
+                delay = (toString ((toFloat iter) / 24)) ++ "s"
+                start = (toString (model.height - 10))
+                end = (toString height)
+
+                labelString =
+                  if bar.isHighlighted then
+                    bar.label
+                  else
+                    ""
               in
-                ( line
-                  [ y1 (toString (model.height - 10))
-                  , y2 (toString height)
-                  , x1 (toString xCoor)
-                  , x2 (toString xCoor)
-                  , strokeWidth (toString width)
-                  , stroke "black"
-                  , onMouseOver (DataMouseOver bar)
-                  , onMouseOut (DataMouseExit bar) ] [] )
-                :: (bars model (iter + 1))
+                ( [ line
+                    [ y1 start
+                    , y2 start
+                    , x1 (toString xCoor)
+                    , x2 (toString xCoor)
+                    , strokeWidth (toString width)
+                    , stroke "black"
+                    , onMouseOver (DataMouseOver bar)
+                    , onMouseOut (DataMouseExit bar)
+                    ]
+                    ( animateLoad start end delay )
+                  , (label xCoor (toFloat(height - 10)) labelString)
+                  ]
+                )
+                ++ (bars model (iter + 1))
             Nothing ->
               []
         Nothing ->
           []
+
+label : Float -> Float -> String -> Svg Msg
+label xCoor yCoor txt =
+  Svg.text_  [ x (toString xCoor), y (toString yCoor), textAnchor "middle" ] [ Svg.text txt ]
+
+animateLoad : String -> String -> String -> List (Svg Msg)
+animateLoad start end delay =
+  [ Svg.animate [ attributeName "y2", from start, to end, dur "1s", begin delay, fill "freeze"] []
+  ]

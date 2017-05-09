@@ -68,8 +68,17 @@ testModel =
 
 testData : List DataModel
 testData =
-  [ { id = 1, value = 5.5, label = "p1", isHighlighted = False }
+  [ { id = 1, value = 5.5, label = "Longer Label", isHighlighted = False }
   , { id = 2, value = 3.5, label = "p2", isHighlighted = False }
   , { id = 3, value = 2.5, label = "p3", isHighlighted = False }
   , { id = 4, value = 7.0, label = "p4", isHighlighted = False }
+  , { id = 5, value = 3.5, label = "p2", isHighlighted = False }
+  , { id = 6, value = 2.5, label = "p3", isHighlighted = False }
+  , { id = 7, value = 7.0, label = "p4", isHighlighted = False }
+  , { id = 8, value = 3.5, label = "p2", isHighlighted = False }
+  , { id = 9, value = 2.5, label = "p3", isHighlighted = False }
+{--  , { id = 10, value = 7.0, label = "p4", isHighlighted = False }
+  , { id = 11, value = 3.5, label = "p2", isHighlighted = False }
+  , { id = 12, value = 2.5, label = "p3", isHighlighted = False }
+  , { id = 13, value = 7.0, label = "p4", isHighlighted = False } --}
   ]

@@ -2,23 +2,26 @@ module Model exposing (..)
 
 -- MODELS
 
+
 type alias Model =
-  { chartType : ChartType
-  , data : List DataModel
-  , label : String
-  , height : Int
-  , width : Int
-  , range : Maybe (Float, Float)
-  }
+    { chartType : ChartType
+    , data : List DataModel
+    , label : String
+    , height : Int
+    , width : Int
+    , range : Maybe ( Float, Float )
+    }
 
 
 type ChartType
-  = BarGraph
-  | PieChart
+    = BarGraph
+    | PieChart
+    | BoxPlot
+
 
 type alias DataModel =
-  { id : Int
-  , value : Float
-  , label : String
-  , isHighlighted : Bool
-  }
+    { id : Int
+    , value : Float
+    , label : String
+    , isHighlighted : Bool
+    }

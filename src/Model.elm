@@ -1,7 +1,15 @@
 module Model exposing (..)
 
+import Dict exposing (..)
+
+
 -- MODELS
 
+type alias ChartModel =
+  { barGraphs : Dict String BarModel }
+
+init : ChartModel
+init = { barGraphs = Dict.empty}
 
 type alias Model =
     { chartType : ChartType
@@ -25,3 +33,17 @@ type alias DataModel =
     , label : String
     , isHighlighted : Bool
     }
+
+type alias BarModel =
+  { data : List DataModel
+  , height : Int
+  , width : Int
+  , range : Maybe (Float, Float)
+  }
+
+type alias BarDataModel =
+  { id : Int
+  , value : Float
+  , label : String
+  , isHighlighted : Bool
+  }

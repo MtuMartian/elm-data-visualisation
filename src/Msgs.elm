@@ -1,9 +1,13 @@
 module Msgs exposing (..)
 
+import ChartingMessages exposing (..)
 import Model exposing (..)
 
 
 type Msg
-    = DataClicked
+  = Msg_ ChartMsg
+
+    {--= DataClicked
     | DataMouseOver DataModel
     | DataMouseExit DataModel
+    --}

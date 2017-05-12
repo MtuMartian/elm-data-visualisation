@@ -1,42 +1,73 @@
 module BarGraph exposing (..)
 
 import Array
+import Attributes exposing (..)
 import Html exposing (Html, div, text)
 import Model exposing (..)
-import Msgs exposing (..)
+import Msgs exposing (Msg)
+import ChartingMessages exposing (..)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
 import Svg.Events as Events exposing (onClick, onMouseOver, onMouseOut)
 
+import Json.Decode as Json
+import Html.Events as HEvents exposing (on)
+
 
 -- MODEL
-{--type alias Model =
-  { bars : List BarModel
-  , label : String
-  , width : Int
-  , height : Int
-  , range : ( Float, Float )
+
+
+
+-- for testing purposes TODO: Replace with more appropriate defaults
+
+defaultModel : BarModel
+defaultModel =
+  { data = defaultData
+  , height = 600
+  , width = 800
+  , range = Just (0, 10)
   }
 
-type alias BarModel =
-  { id : Int
-  , value : Float
-  , label : String
+defaultModelWithData : List BarDataModel -> BarModel
+defaultModelWithData data =
+  { data = data
+  , height = 600
+  , width = 800
+  , range = Just (0, 30)
   }
---}
+
+defaultData : List BarDataModel
+defaultData =
+      [ { id = 1, value = 1, label = "Longer Label", isHighlighted = False }
+      , { id = 2, value = 2, label = "p2", isHighlighted = False }
+      , { id = 3, value = 3, label = "p3", isHighlighted = False }
+      , { id = 4, value = 5, label = "p4", isHighlighted = False }
+      , { id = 5, value = 6, label = "p2", isHighlighted = False }
+      ]
+
+-- UPDATE
+
+
+
 -- VIEW
 
+constructor : List BarDataModel -> String -> Html Msg
+constructor data id =
+  let
+    model = defaultModelWithData data
+  in
+    view model id
 
-view : Model -> Html Msg
-view model =
-    div []
+view : BarModel -> String -> Html Msg
+view model id =
+    div [ onCreate (Msgs.Msg_ (ElementCreated BarGraph id))]
         [ svg
             [ width (toString model.width), height (toString model.height), viewBox ("0 0 " ++ (toString model.width) ++ " " ++ (toString model.height)) ]
             ((axes model) ++ (bars model 0))
         ]
 
 
-axes : Model -> List (Svg Msg)
+axes : BarModel -> List (Svg Msg)
 axes model =
     List.append
         [ line
@@ -61,7 +92,7 @@ axes model =
         (ticks model 0 6)
 
 
-ticks : Model -> Int -> Int -> List (Svg Msg)
+ticks : BarModel -> Int -> Int -> List (Svg Msg)
 ticks model iter total =
     if iter >= total then
         []
@@ -73,7 +104,7 @@ ticks model iter total =
             (line [ x1 "0", x2 "20", y1 height, y2 height, strokeWidth "2", stroke "black" ] []) :: (ticks model (iter + 1) total)
 
 
-bars : Model -> Int -> List (Svg Msg)
+bars : BarModel -> Int -> List (Svg Msg)
 bars model iter =
     if iter >= (List.length model.data) then
         []
@@ -136,8 +167,8 @@ bars model iter =
                                     , x2 (toString xCoor)
                                     , strokeWidth (toString width)
                                     , stroke "black"
-                                    , onMouseOver (DataMouseOver bar)
-                                    , onMouseOut (DataMouseExit bar)
+                                    , onMouseOver (Msgs.Msg_ (BarGraphMouseOver bar))
+                                    , onMouseOut (Msgs.Msg_ (BarGraphMouseOut bar))
                                     ]
                                     (animateLoad start end delay)
                                  , (label xCoor (toFloat (height - 10)) labelString)

@@ -5,9 +5,11 @@ import Model exposing (..)
 
 
 type Msg
-  = Msg_ ChartMsg
+    = Msg_ ChartMsg
 
-    {--= DataClicked
+
+
+{--= DataClicked
     | DataMouseOver DataModel
     | DataMouseExit DataModel
     --}

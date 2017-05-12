@@ -2,47 +2,75 @@ module Update exposing (..)
 
 import ChartingMessages exposing (..)
 import Debug
+import Dict exposing (..)
 import Msgs exposing (Msg(..))
-import Model exposing (Model, BarModel)
+import Model exposing (Model, ChartModel, BarModel)
 
 
-chartUpdate : ChartMsg -> BarModel -> ( BarModel, Cmd Msg )
+chartUpdate : ChartMsg -> ChartModel -> ( ChartModel, Cmd Msg )
 chartUpdate msg model =
-  case msg of
-    BarGraphMouseOver data ->
-        let
-          testmessage = Debug.log "TESTING" ""
-          updatedData =
-            List.map
-              (\x ->
-                if x.id == data.id then
-                  { x | isHighlighted = True }
-                else
-                  x
-              )
-              model.data
-          updatedModel =
-            { model | data = updatedData }
-        in
-          ( updatedModel, Cmd.none )
-    BarGraphMouseOut data ->
-      let
-        updatedData =
-          List.map
-            (\x ->
-              if x.id == data.id then
-                { x | isHighlighted = False }
-              else
-                x
-            )
-            model.data
-        updatedModel =
-          { model | data = updatedData }
-      in
-        ( updatedModel, Cmd.none )
+    case msg of
+        BarGraphMouseOver data id ->
+            let
+                barModel =
+                    Dict.get id model.barGraphs
+            in
+                case barModel of
+                    Just barModel ->
+                        let
+                            updatedData =
+                                List.map
+                                    (\x ->
+                                        if x.id == data.id then
+                                            { x | isHighlighted = True }
+                                        else
+                                            x
+                                    )
+                                    barModel.data
 
-    ElementCreated type_ id->
-      let
-        testMessage = Debug.log "something was created" ""
-      in
-        (model, Cmd.none)
+                            updatedBarModel =
+                                { barModel | data = updatedData }
+
+                            updatedDict =
+                                Dict.insert id updatedBarModel model.barGraphs
+                        in
+                            ( { model | barGraphs = updatedDict }, Cmd.none )
+
+                    Nothing ->
+                        ( model, Cmd.none )
+
+        BarGraphMouseOut data id ->
+            let
+                barModel =
+                    Dict.get id model.barGraphs
+            in
+                case barModel of
+                    Just barModel ->
+                        let
+                            updatedData =
+                                List.map
+                                    (\x ->
+                                        if x.id == data.id then
+                                            { x | isHighlighted = False }
+                                        else
+                                            x
+                                    )
+                                    barModel.data
+
+                            updatedBarModel =
+                                { barModel | data = updatedData }
+
+                            updatedDict =
+                                Dict.insert id updatedBarModel model.barGraphs
+                        in
+                            ( { model | barGraphs = updatedDict }, Cmd.none )
+
+                    Nothing ->
+                        ( model, Cmd.none )
+
+        BarGraphCreated id barModel ->
+            let
+                updatedDict =
+                    Dict.insert id barModel model.barGraphs
+            in
+                ( { model | barGraphs = updatedDict }, Cmd.none )

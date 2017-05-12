@@ -2,7 +2,8 @@ module ChartingMessages exposing (..)
 
 import Model exposing (..)
 
+
 type ChartMsg
-  = BarGraphMouseOver BarDataModel
-  | BarGraphMouseOut BarDataModel
-  | ElementCreated ChartType String
+    = BarGraphMouseOver BarDataModel String
+    | BarGraphMouseOut BarDataModel String
+    | BarGraphCreated String BarModel

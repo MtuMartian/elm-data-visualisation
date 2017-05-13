@@ -1,7 +1,7 @@
 module Main exposing (..)
 
 import Html exposing (Html, div, text, program)
-import Model exposing (BarModel, BarDataModel, Model, ChartModel, init)
+import Model exposing (BarModel, BarDataModel, Model, ChartModel, init, PieModel, PieDataModel, BoxPlotModel, BoxDataModel)
 import Msgs exposing (..)
 import BarGraph exposing (view, defaultModel, defaultModelWithData)
 import ChartingMessages exposing (..)
@@ -35,6 +35,8 @@ view model =
     div []
         [ BarGraph.view testData model.mdl "1"
         , BarGraph.view testData2 model.mdl "2"
+        , PieChart.view testData3 model.mdl "1"
+        , BoxPlot.view testData4 model.mdl "1"
         ]
 
 
@@ -78,6 +80,24 @@ testData2 =
     , { id = 3, value = 6, label = "p3", isHighlighted = False }
     , { id = 4, value = 8, label = "p4", isHighlighted = False }
     , { id = 5, value = 10, label = "p2", isHighlighted = False }
+    , { id = 6, value = 8, label = "p4", isHighlighted = False }
+    , { id = 7, value = 10, label = "p2", isHighlighted = False }
+    ]
+
+testData3 : List PieDataModel
+testData3 =
+    [ { id = 1, value = 2, label = "Longer Label" }
+    , { id = 2, value = 4, label = "p2" }
+    , { id = 3, value = 6, label = "p3" }
+    , { id = 4, value = 8, label = "p4" }
+    ]
+
+testData4 : List BoxDataModel
+testData4 =
+    [ { id = 1, value = 2 }
+    , { id = 2, value = 4 }
+    , { id = 3, value = 6 }
+    , { id = 4, value = 8 }
     ]
 
 

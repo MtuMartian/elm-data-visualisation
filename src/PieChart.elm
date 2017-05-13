@@ -1,25 +1,60 @@
 module PieChart exposing (..)
 
 import Array
+import Attributes exposing (onCreate)
 import Color exposing (Color, rgb)
+import Dict exposing (..)
 import Html exposing (Html, div, text)
 import Model exposing (..)
 import Msgs exposing (..)
+import ChartingMessages exposing (..)
 import Random exposing (..)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
 
 
-dataSum : List DataModel -> Float
+dataSum : List PieDataModel -> Float
 dataSum slices =
     List.map (\slice -> slice.value) slices
         |> List.sum
 
+defaultModelWithData : List PieDataModel -> String -> PieModel
+defaultModelWithData data id =
+  { id = id
+  , data = data
+  , radius = 200
+  }
 
+defaultData : List PieDataModel
+defaultData =
+  [ { id = 1, value = 1, label = "s1" }
+  , { id = 2, value = 1, label = "s2" }
+  , { id = 3, value = 3, label = "s3" }
+  ]
 
 -- VIEW
 
+view : List PieDataModel -> ChartModel -> String -> Html Msg
+view data mdl id =
+  let
+    model =
+      Dict.get id mdl.pieCharts
+  in
+    case model of
+      Just model ->
+        div [ onCreate (Msgs.Msg_ (PieChartCreated id model)) ]
+            [ svg
+                [ width (toString (model.radius * 2)), height (toString (model.radius * 2)), viewBox ("0 0 " ++ (toString (model.radius * 2)) ++ " " ++ (toString (model.radius * 2))) ]
+                (slices model 0 0)
+            ]
+      Nothing ->
+        let
+          model =
+            defaultModelWithData data id
+        in
+          div [ onCreate (Msgs.Msg_ (PieChartCreated id model )) ] []
 
+{--
 view : Model -> Html Msg
 view model =
     div []
@@ -27,9 +62,9 @@ view model =
             [ width (toString model.width), height (toString model.height), viewBox ("0 0 " ++ (toString model.width) ++ " " ++ (toString model.height)) ]
             (slices model 0 0)
         ]
+--}
 
-
-slices : Model -> Int -> Float -> List (Svg Msg)
+slices : PieModel -> Int -> Float -> List (Svg Msg)
 slices model iter prev =
     if iter >= (List.length model.data) then
         []
@@ -42,8 +77,8 @@ slices model iter prev =
             case slice of
                 Just slice ->
                     let
-                        radius =
-                            (Basics.min model.width model.height |> toFloat) / 2
+                        radius = toFloat model.radius
+                            --(Basics.min model.width model.height |> toFloat) / 2
 
                         center =
                             ( radius, radius )

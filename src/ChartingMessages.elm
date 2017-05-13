@@ -7,3 +7,5 @@ type ChartMsg
     = BarGraphMouseOver BarDataModel String
     | BarGraphMouseOut BarDataModel String
     | BarGraphCreated String BarModel
+    | PieChartCreated String PieModel
+    | BoxPlotCreated String BoxPlotModel

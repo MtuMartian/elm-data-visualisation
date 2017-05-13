@@ -51,14 +51,6 @@ defaultData =
 
 -- UPDATE
 -- VIEW
-{--
-constructor : List BarDataModel -> String -> Html Msg
-constructor data id =
-  let
-    model = defaultModelWithData data
-  in
-    view model id
---}
 
 
 view : List BarDataModel -> ChartModel -> String -> Html Msg

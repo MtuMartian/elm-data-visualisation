@@ -1,6 +1,9 @@
 module BoxPlot exposing (..)
 
 import Array
+import Attributes exposing (onCreate)
+import ChartingMessages exposing (..)
+import Dict exposing (..)
 import Html exposing (Html, div, text)
 import Model exposing (..)
 import Msgs exposing (..)
@@ -9,17 +12,43 @@ import Svg.Attributes exposing (..)
 import Svg.Events as Events exposing (onClick, onMouseOver, onMouseOut)
 
 
-view : Model -> Html Msg
-view model =
-    div
+defaultModelWithData : List BoxDataModel -> String -> BoxPlotModel
+defaultModelWithData data id =
+  { id = id
+  , data = data
+  , width = 300
+  , height = 600
+  }
+
+view : List BoxDataModel -> ChartModel -> String -> Html Msg
+view data mdl id =
+    let
+      model =
+          Dict.get id mdl.boxPlots
+    in
+      case model of
+        Just model ->
+          div [ onCreate (Msgs.Msg_ (BoxPlotCreated id model))]
+              [ svg
+                  [ width (toString model.width), height (toString model.height), viewBox ("0 0 " ++ (toString model.width) ++ " " ++ (toString model.height)) ]
+                  (boxPlot model)
+              ]
+
+        Nothing ->
+          let
+            model =
+              defaultModelWithData data id
+          in
+            div [ onCreate (Msgs.Msg_ (BoxPlotCreated id model))] []
+    {--div
         []
         [ svg
             [ width (toString model.width), height (toString model.height), viewBox ("0 0 " ++ (toString model.width) ++ " " ++ (toString model.height)) ]
             (boxPlot model)
-        ]
+        ]--}
 
 
-boxPlot : Model -> List (Svg Msg)
+boxPlot : BoxPlotModel -> List (Svg Msg)
 boxPlot model =
     List.concat
         [ drawMinMax model
@@ -28,7 +57,7 @@ boxPlot model =
         ]
 
 
-drawMinMax : Model -> List (Svg Msg)
+drawMinMax : BoxPlotModel -> List (Svg Msg)
 drawMinMax model =
     let
         margin =
@@ -67,7 +96,7 @@ drawMinMax model =
         ]
 
 
-drawMedianLine : Model -> List (Svg Msg)
+drawMedianLine : BoxPlotModel -> List (Svg Msg)
 drawMedianLine model =
     let
         margin =
@@ -139,7 +168,7 @@ drawMedianLine model =
                 []
 
 
-drawBox : Model -> List (Svg Msg)
+drawBox : BoxPlotModel -> List (Svg Msg)
 drawBox model =
     let
         sorted =
@@ -268,7 +297,7 @@ drawBox model =
                 []
 
 
-median : List DataModel -> Maybe Float
+median : List BoxDataModel -> Maybe Float
 median data =
     if (List.length data) % 2 == 1 then
         let

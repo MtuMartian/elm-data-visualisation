@@ -74,3 +74,15 @@ chartUpdate msg model =
                     Dict.insert id barModel model.barGraphs
             in
                 ( { model | barGraphs = updatedDict }, Cmd.none )
+
+        PieChartCreated id pieModel ->
+            let updatedDict =
+                    Dict.insert id pieModel model.pieCharts
+            in
+                ( { model | pieCharts = updatedDict }, Cmd.none )
+
+        BoxPlotCreated id boxPlotModel ->
+            let updatedDict =
+                    Dict.insert id boxPlotModel model.boxPlots
+            in
+                ( { model | boxPlots = updatedDict }, Cmd.none )

@@ -7,12 +7,18 @@ import Dict exposing (..)
 
 
 type alias ChartModel =
-    { barGraphs : Dict String BarModel }
+    { barGraphs : Dict String BarModel
+    , pieCharts : Dict String PieModel
+    , boxPlots : Dict String BoxPlotModel
+    }
 
 
 init : ChartModel
 init =
-    { barGraphs = Dict.empty }
+    { barGraphs = Dict.empty
+    , pieCharts = Dict.empty
+    , boxPlots = Dict.empty
+    }
 
 
 type alias Model =
@@ -39,6 +45,18 @@ type alias DataModel =
     }
 
 
+type alias PieModel =
+  { id : String
+  , data : List PieDataModel
+  , radius : Int
+  }
+
+type alias PieDataModel =
+  { id : Int
+  , value : Float
+  , label : String
+  }
+
 type alias BarModel =
     { id : String
     , data : List DataModel
@@ -54,3 +72,15 @@ type alias BarDataModel =
     , label : String
     , isHighlighted : Bool
     }
+
+type alias BoxPlotModel =
+  { id : String
+  , data : List BoxDataModel
+  , height : Int
+  , width : Int
+  }
+
+type alias BoxDataModel =
+  { id : Int
+  , value : Float
+  }

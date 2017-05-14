@@ -62,7 +62,7 @@ view data mdl id =
                 div [ onCreate (Msgs.Msg_ (BarGraphCreated id model)) ]
                     [ svg
                         [ width (toString model.width), height (toString model.height), viewBox ("0 0 " ++ (toString model.width) ++ " " ++ (toString model.height)) ]
-                        ((axes model) ++ (bars model 0))-- ++ boxText
+                        ((axes model) ++ (bars model 0 []))-- ++ boxText
                     ]
 
             Nothing ->
@@ -113,10 +113,10 @@ ticks model iter total =
             (line [ x1 "0", x2 "20", y1 height, y2 height, strokeWidth "2", stroke "black" ] []) :: (ticks model (iter + 1) total)
 
 
-bars : BarModel -> Int -> List (Svg Msg)
-bars model iter =
+bars : BarModel -> Int -> List (Svg Msg) -> List (Svg Msg)
+bars model iter infoBoxes =
     if iter >= (List.length model.data) then
-        []
+        infoBoxes
     else
         let
             bar =
@@ -163,21 +163,13 @@ bars model iter =
                                 end =
                                     (toString height)
 
-                                test =
-                                    Debug.log "Testing bar: " bar
+                                infoBox = label xCoor (toFloat (height - 50)) bar.label (toString bar.value)
 
-                                labelElement =
-                                  if bar.isHighlighted then
-                                    label xCoor (toFloat (height - 50)) bar.label (toString bar.value)
-                                  else
-                                    Svg.text ""
-                                  --foreignObject [x "20", y "20"] [div [HAttr.style box] [Html.text "hello world"]]
+                                updatedInfoBoxes = if bar.isHighlighted then
+                                  infoBoxes ++ [infoBox]
+                                else
+                                  infoBoxes
 
-                                labelString =
-                                    if bar.isHighlighted then
-                                        bar.label
-                                    else
-                                        ""
                             in
                                 ([ line
                                     [ y1 start
@@ -190,10 +182,9 @@ bars model iter =
                                     , onMouseOut (Msgs.Msg_ (BarGraphMouseOut bar model.id))
                                     ]
                                     (animateLoad start end delay)
-                                 , labelElement --(label xCoor (toFloat (height - 10)) labelString)
                                  ]
                                 )
-                                    ++ (bars model (iter + 1))
+                                    ++ (bars model (iter + 1) updatedInfoBoxes)
 
                         Nothing ->
                             []

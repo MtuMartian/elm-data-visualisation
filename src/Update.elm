@@ -1,53 +1,87 @@
 module Update exposing (..)
 
-import Debug
+import ChartingMessages exposing (..)
+import Dict exposing (..)
 import Msgs exposing (Msg(..))
-import Model exposing (Model)
+import Model exposing (ChartModel, BarModel)
 
 
-update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
+chartUpdate : ChartMsg -> ChartModel -> ( ChartModel, Cmd Msg )
+chartUpdate msg model =
     case msg of
-        DataClicked ->
+        BarGraphMouseOver data id ->
             let
-                test =
-                    Debug.log "data clicked" 0
-
-                updatedModel =
-                    { model | data = [] }
+                barModel =
+                    Dict.get id model.barGraphs
             in
-                ( updatedModel, Cmd.none )
+                case barModel of
+                    Just barModel ->
+                        let
+                            updatedData =
+                                List.map
+                                    (\x ->
+                                        if x.id == data.id then
+                                            { x | isHighlighted = True }
+                                        else
+                                            x
+                                    )
+                                    barModel.data
 
-        DataMouseOver data ->
+                            updatedBarModel =
+                                { barModel | data = updatedData }
+
+                            updatedDict =
+                                Dict.insert id updatedBarModel model.barGraphs
+                        in
+                            ( { model | barGraphs = updatedDict }, Cmd.none )
+
+                    Nothing ->
+                        ( model, Cmd.none )
+
+        BarGraphMouseOut data id ->
             let
-                updatedData =
-                    List.map
-                        (\x ->
-                            if x.id == data.id then
-                                { x | isHighlighted = True }
-                            else
-                                x
-                        )
-                        model.data
-
-                updatedModel =
-                    { model | data = updatedData }
+                barModel =
+                    Dict.get id model.barGraphs
             in
-                ( updatedModel, Cmd.none )
+                case barModel of
+                    Just barModel ->
+                        let
+                            updatedData =
+                                List.map
+                                    (\x ->
+                                        if x.id == data.id then
+                                            { x | isHighlighted = False }
+                                        else
+                                            x
+                                    )
+                                    barModel.data
 
-        DataMouseExit data ->
+                            updatedBarModel =
+                                { barModel | data = updatedData }
+
+                            updatedDict =
+                                Dict.insert id updatedBarModel model.barGraphs
+                        in
+                            ( { model | barGraphs = updatedDict }, Cmd.none )
+
+                    Nothing ->
+                        ( model, Cmd.none )
+
+        BarGraphCreated id barModel ->
             let
-                updatedData =
-                    List.map
-                        (\x ->
-                            if x.id == data.id then
-                                { x | isHighlighted = False }
-                            else
-                                x
-                        )
-                        model.data
-
-                updatedModel =
-                    { model | data = updatedData }
+                updatedDict =
+                    Dict.insert id barModel model.barGraphs
             in
-                ( updatedModel, Cmd.none )
+                ( { model | barGraphs = updatedDict }, Cmd.none )
+
+        PieChartCreated id pieModel ->
+            let updatedDict =
+                    Dict.insert id pieModel model.pieCharts
+            in
+                ( { model | pieCharts = updatedDict }, Cmd.none )
+
+        BoxPlotCreated id boxPlotModel ->
+            let updatedDict =
+                    Dict.insert id boxPlotModel model.boxPlots
+            in
+                ( { model | boxPlots = updatedDict }, Cmd.none )

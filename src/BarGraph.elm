@@ -1,42 +1,82 @@
 module BarGraph exposing (..)
 
 import Array
+import Attributes exposing (..)
+import CSS exposing (box)
+import Dict exposing (..)
 import Html exposing (Html, div, text)
+import Html.Attributes as HAttr exposing (style)
 import Model exposing (..)
-import Msgs exposing (..)
+import Msgs exposing (Msg)
+import ChartingMessages exposing (..)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
 import Svg.Events as Events exposing (onClick, onMouseOver, onMouseOut)
 
 
 -- MODEL
-{--type alias Model =
-  { bars : List BarModel
-  , label : String
-  , width : Int
-  , height : Int
-  , range : ( Float, Float )
-  }
+-- for testing purposes TODO: Replace with more appropriate defaults
 
-type alias BarModel =
-  { id : Int
-  , value : Float
-  , label : String
-  }
---}
+
+defaultModel : BarModel
+defaultModel =
+    { id = "1"
+    , data = defaultData
+    , height = 600
+    , width = 800
+    , range = Just ( 0, 10 )
+    }
+
+
+defaultModelWithData : List BarDataModel -> String -> BarModel
+defaultModelWithData data id =
+    { id = id
+    , data = data
+    , height = 600
+    , width = 800
+    , range = Just ( 0, 30 )
+    }
+
+
+defaultData : List BarDataModel
+defaultData =
+    [ { id = 1, value = 1, label = "Longer Label", isHighlighted = False }
+    , { id = 2, value = 2, label = "p2", isHighlighted = False }
+    , { id = 3, value = 3, label = "p3", isHighlighted = False }
+    , { id = 4, value = 5, label = "p4", isHighlighted = False }
+    , { id = 5, value = 6, label = "p2", isHighlighted = False }
+    ]
+
+
 -- VIEW
 
 
-view : Model -> Html Msg
-view model =
-    div []
-        [ svg
-            [ width (toString model.width), height (toString model.height), viewBox ("0 0 " ++ (toString model.width) ++ " " ++ (toString model.height)) ]
-            ((axes model) ++ (bars model 0))
-        ]
+view : List BarDataModel -> ChartModel -> String -> Html Msg
+view data mdl id =
+    let
+        model =
+            Dict.get id mdl.barGraphs
+    in
+        case model of
+            Just model ->
+                div [ onCreate (Msgs.Msg_ (BarGraphCreated id model)) ]
+                    [ svg
+                        [ width (toString model.width), height (toString model.height), viewBox ("0 0 " ++ (toString model.width) ++ " " ++ (toString model.height)) ]
+                        ((axes model) ++ (bars model 0))-- ++ boxText
+                    ]
 
+            Nothing ->
+                let
+                    model =
+                        defaultModelWithData data id
+                in
+                    div [ onCreate (Msgs.Msg_ (BarGraphCreated id model)) ] []
 
-axes : Model -> List (Svg Msg)
+boxText : Svg Msg
+boxText =
+  foreignObject [x "20", y "20"] [div [HAttr.style box] [Html.text "hello world"]]
+
+axes : BarModel -> List (Svg Msg)
 axes model =
     List.append
         [ line
@@ -61,7 +101,7 @@ axes model =
         (ticks model 0 6)
 
 
-ticks : Model -> Int -> Int -> List (Svg Msg)
+ticks : BarModel -> Int -> Int -> List (Svg Msg)
 ticks model iter total =
     if iter >= total then
         []
@@ -73,7 +113,7 @@ ticks model iter total =
             (line [ x1 "0", x2 "20", y1 height, y2 height, strokeWidth "2", stroke "black" ] []) :: (ticks model (iter + 1) total)
 
 
-bars : Model -> Int -> List (Svg Msg)
+bars : BarModel -> Int -> List (Svg Msg)
 bars model iter =
     if iter >= (List.length model.data) then
         []
@@ -123,6 +163,16 @@ bars model iter =
                                 end =
                                     (toString height)
 
+                                test =
+                                    Debug.log "Testing bar: " bar
+
+                                labelElement =
+                                  if bar.isHighlighted then
+                                    label xCoor (toFloat (height - 50)) bar.label (toString bar.value)
+                                  else
+                                    Svg.text ""
+                                  --foreignObject [x "20", y "20"] [div [HAttr.style box] [Html.text "hello world"]]
+
                                 labelString =
                                     if bar.isHighlighted then
                                         bar.label
@@ -136,11 +186,11 @@ bars model iter =
                                     , x2 (toString xCoor)
                                     , strokeWidth (toString width)
                                     , stroke "black"
-                                    , onMouseOver (DataMouseOver bar)
-                                    , onMouseOut (DataMouseExit bar)
+                                    , onMouseOver (Msgs.Msg_ (BarGraphMouseOver bar model.id))
+                                    , onMouseOut (Msgs.Msg_ (BarGraphMouseOut bar model.id))
                                     ]
                                     (animateLoad start end delay)
-                                 , (label xCoor (toFloat (height - 10)) labelString)
+                                 , labelElement --(label xCoor (toFloat (height - 10)) labelString)
                                  ]
                                 )
                                     ++ (bars model (iter + 1))
@@ -152,9 +202,10 @@ bars model iter =
                     []
 
 
-label : Float -> Float -> String -> Svg Msg
-label xCoor yCoor txt =
-    Svg.text_ [ x (toString xCoor), y (toString yCoor), textAnchor "middle" ] [ Svg.text txt ]
+label : Float -> Float -> String -> String -> Svg Msg
+label xCoor yCoor label value =
+  foreignObject [ x (toString xCoor), y (toString yCoor) ] [ div [HAttr.style box] [Html.b [] [Html.text (label ++ ": ")], Html.text value]]
+    --Svg.text_ [ x (toString xCoor), y (toString yCoor), textAnchor "middle" ] [ Svg.text txt ]
 
 
 animateLoad : String -> String -> String -> List (Svg Msg)

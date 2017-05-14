@@ -1,52 +1,58 @@
 module Main exposing (..)
 
+import CSS exposing (box)
 import Html exposing (Html, div, text, program)
-import Model exposing (..)
+import Html.Attributes exposing (style)
+import Model exposing (BarModel, BarDataModel, ChartModel, init, PieModel, PieDataModel, BoxPlotModel, BoxDataModel)
 import Msgs exposing (..)
-import Update exposing (update)
-import BarGraph exposing (view)
+import BarGraph exposing (view, defaultModel, defaultModelWithData)
+import ChartingMessages exposing (..)
 import BoxPlot exposing (view)
 import PieChart exposing (view)
+import Update exposing (chartUpdate)
+
+
+-- model
+
+
+type alias Model =
+    { mdl : ChartModel }
+
 
 
 -- init
 
 
-init : ( Model.Model, Cmd Msg )
+init : ( Model, Cmd Msg )
 init =
-    ( testModel, Cmd.none )
+    ( { mdl = Model.init }, Cmd.none )
 
 
 
 -- VIEW
-{--view : BarGraph.Model -> Html Msg
+
+
+view : Model -> Html Msg
 view model =
     div []
-        [(BarGraph.view model)]
---}
+        [ BarGraph.view testData model.mdl "1"
+        --, BarGraph.view testData2 model.mdl "2"
+        , PieChart.view testData3 model.mdl "1"
+        , BoxPlot.view testData4 model.mdl "1"
+        , textWithBox
+        ]
 
 
-view : Model.Model -> Html Msg
-view model =
-    case model.chartType of
-        BarGraph ->
-            div []
-                [ (BarGraph.view model) ]
-
-        PieChart ->
-            div []
-                [ (PieChart.view model) ]
-
-        BoxPlot ->
-            div []
-                [ (BoxPlot.view model) ]
-
+textWithBox : Html Msg
+textWithBox =
+  div [ style box ]
+    [ text "test" ]
 
 
 -- SUBSCRIPTIONS
 
 
-subscriptions : Model.Model -> Sub Msg
+subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.none
 
@@ -55,7 +61,7 @@ subscriptions model =
 -- MAIN
 
 
-main : Program Never Model.Model Msg
+main : Program Never Model Msg
 main =
     program
         { init = init
@@ -65,38 +71,54 @@ main =
         }
 
 
-testModel : Model.Model
-testModel =
-    { chartType = BarGraph
-    , data = testData
-    , label = "test"
-    , height = 1200
-    , width = 400
-    , range = Just ( 0, 10 )
-    }
-
-
-testData : List DataModel
+testData : List BarDataModel
 testData =
     [ { id = 1, value = 1, label = "Longer Label", isHighlighted = False }
-    , { id = 2, value = 2, label = "p2", isHighlighted = False }
-    , { id = 3, value = 3, label = "p3", isHighlighted = False }
-    , { id = 4, value = 5, label = "p4", isHighlighted = False }
-    , { id = 5, value = 6, label = "p2", isHighlighted = False }
-    , { id = 6, value = 1, label = "Longer Label", isHighlighted = False }
-    , { id = 7, value = 2, label = "p2", isHighlighted = False }
-    , { id = 8, value = 8, label = "p3", isHighlighted = False }
-    , { id = 9, value = 5, label = "p4", isHighlighted = False }
-    , { id = 10, value = 6, label = "p2", isHighlighted = False }
-    , { id = 11, value = 1, label = "Longer Label", isHighlighted = False }
-    , { id = 12, value = 2, label = "p2", isHighlighted = False }
-    , { id = 13, value = 6, label = "p3", isHighlighted = False }
-    , { id = 14, value = 7, label = "p4", isHighlighted = False }
-    , { id = 15, value = 0.1, label = "p2", isHighlighted = False }
-
-    --}
-    {--, { id = 10, value = 7.0, label = "p4", isHighlighted = False }
-  , { id = 11, value = 3.5, label = "p2", isHighlighted = False }
-  , { id = 12, value = 2.5, label = "p3", isHighlighted = False }
-  , { id = 13, value = 7.0, label = "p4", isHighlighted = False } --}
+    , { id = 2, value = 4, label = "p2", isHighlighted = False }
+    , { id = 3, value = 9, label = "p3", isHighlighted = False }
+    , { id = 4, value = 16, label = "p4", isHighlighted = False }
+    , { id = 5, value = 10, label = "p2", isHighlighted = False }
     ]
+
+
+testData2 : List BarDataModel
+testData2 =
+    [ { id = 1, value = 2, label = "Longer Label", isHighlighted = False }
+    , { id = 2, value = 4, label = "p2", isHighlighted = False }
+    , { id = 3, value = 6, label = "p3", isHighlighted = False }
+    , { id = 4, value = 8, label = "p4", isHighlighted = False }
+    , { id = 5, value = 10, label = "p2", isHighlighted = False }
+    , { id = 6, value = 8, label = "p4", isHighlighted = False }
+    , { id = 7, value = 10, label = "p2", isHighlighted = False }
+    ]
+
+testData3 : List PieDataModel
+testData3 =
+    [ { id = 1, value = 2, label = "Longer Label" }
+    , { id = 2, value = 4, label = "p2" }
+    , { id = 3, value = 6, label = "p3" }
+    , { id = 4, value = 8, label = "p4" }
+    ]
+
+testData4 : List BoxDataModel
+testData4 =
+    [ { id = 1, value = 2 }
+    , { id = 2, value = 4 }
+    , { id = 3, value = 6 }
+    , { id = 4, value = 8 }
+    ]
+
+
+
+-- update
+
+
+update : Msg -> Model -> ( Model, Cmd Msg )
+update msg model =
+    case msg of
+        Msg_ msg_ ->
+            let
+                ( updatedModel, cmd ) =
+                    chartUpdate msg_ model.mdl
+            in
+                ( { model | mdl = updatedModel }, cmd )

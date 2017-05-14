@@ -43,6 +43,7 @@ type alias BarDataModel =
     , value : Float
     , label : String
     , isHighlighted : Bool
+    , color : String
     }
 
 type alias BoxPlotModel =

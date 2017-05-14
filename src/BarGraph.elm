@@ -21,7 +21,7 @@ import Svg.Events as Events exposing (onClick, onMouseOver, onMouseOut)
 defaultModel : BarModel
 defaultModel =
     { id = "1"
-    , data = defaultData
+    , data = []
     , height = 600
     , width = 800
     , range = Just ( 0, 10 )
@@ -36,16 +36,6 @@ defaultModelWithData data id =
     , width = 800
     , range = Just ( 0, 30 )
     }
-
-
-defaultData : List BarDataModel
-defaultData =
-    [ { id = 1, value = 1, label = "Longer Label", isHighlighted = False }
-    , { id = 2, value = 2, label = "p2", isHighlighted = False }
-    , { id = 3, value = 3, label = "p3", isHighlighted = False }
-    , { id = 4, value = 5, label = "p4", isHighlighted = False }
-    , { id = 5, value = 6, label = "p2", isHighlighted = False }
-    ]
 
 
 -- VIEW
@@ -177,7 +167,7 @@ bars model iter infoBoxes =
                                     , x1 (toString xCoor)
                                     , x2 (toString xCoor)
                                     , strokeWidth (toString width)
-                                    , stroke "black"
+                                    , stroke bar.color
                                     , onMouseOver (Msgs.Msg_ (BarGraphMouseOver bar model.id))
                                     , onMouseOut (Msgs.Msg_ (BarGraphMouseOut bar model.id))
                                     ]

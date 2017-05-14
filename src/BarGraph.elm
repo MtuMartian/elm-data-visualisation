@@ -132,11 +132,12 @@ bars model iter infoBoxes =
                                 normalizer =
                                     (bar.value - min) / (max - min)
 
-                                height =
-                                    model.height - (truncate ((toFloat model.height) * normalizer))
-
                                 margin =
                                     10 - highlightModifier
+
+                                height =
+                                    model.height - (truncate ((toFloat model.height) * normalizer)) - margin
+
 
                                 width =
                                     (model.width - 20) // (List.length model.data) - margin

@@ -24,7 +24,7 @@ defaultModel =
     , data = []
     , height = 600
     , width = 800
-    , range = Just ( 0, 10 )
+    , range = ( 0, 10 )
     }
 
 
@@ -34,7 +34,7 @@ defaultModelWithData data id =
     , data = data
     , height = 600
     , width = 800
-    , range = Just ( 0, 30 )
+    , range = ( 0, 30 )
     }
 
 
@@ -52,7 +52,7 @@ view data mdl id =
                 div [ onCreate (Msgs.Msg_ (BarGraphCreated id model)) ]
                     [ svg
                         [ width (toString model.width), height (toString model.height), viewBox ("0 0 " ++ (toString model.width) ++ " " ++ (toString model.height)) ]
-                        ((axes model) ++ (bars model 0 []))-- ++ boxText
+                        ((axes model) ++ (bars model 0 []))
                     ]
 
             Nothing ->
@@ -61,10 +61,6 @@ view data mdl id =
                         defaultModelWithData data id
                 in
                     div [ onCreate (Msgs.Msg_ (BarGraphCreated id model)) ] []
-
-boxText : Svg Msg
-boxText =
-  foreignObject [x "20", y "20"] [div [HAttr.style box] [Html.text "hello world"]]
 
 axes : BarModel -> List (Svg Msg)
 axes model =
@@ -98,12 +94,24 @@ crossSections model iter total =
     else
         let
             height =
-                toString (model.height - (model.height * iter // total) - 10)
+                model.height - (model.height * iter // total) - 10
             width =
                 toString (model.width)
-        in
-            [(line [ x1 "0", x2 width, y1 height, y2 height, strokeWidth "1", stroke "gray" ] [])] ++ (crossSections model (iter + 1) total)
 
+            range =
+              (Tuple.second model.range) - (Tuple.first model.range)
+
+            value =
+                (Tuple.first model.range) + ((range / (toFloat total)) * (toFloat iter)) |> toString
+
+        in
+            [ line [ x1 "0", x2 width, y1 ( toString height), y2 (toString height), strokeWidth "1", stroke "gray" ] []
+            , Svg.text_
+                [ x "10", y (toString (height - 5)) ]
+                [Svg.text value ]
+            ]
+            ++ (crossSections model (iter + 1) total)
+--Svg.text_ [ x (toString xCoor), y (toString yCoor), textAnchor "middle" ] [ Svg.text txt ]
 
 bars : BarModel -> Int -> List (Svg Msg) -> List (Svg Msg)
 bars model iter infoBoxes =
@@ -116,71 +124,68 @@ bars model iter infoBoxes =
         in
             case bar of
                 Just bar ->
-                    case model.range of
-                        Just range ->
-                            let
-                                highlightModifier =
-                                    if bar.isHighlighted then
-                                        5
-                                    else
-                                        0
+                    let
+                        range = model.range
 
-                                min =
-                                    Tuple.first range
+                        highlightModifier =
+                            if bar.isHighlighted then
+                                5
+                            else
+                                0
 
-                                max =
-                                    Tuple.second range
+                        min =
+                            Tuple.first range
 
-                                normalizer =
-                                    (bar.value - min) / (max - min)
+                        max =
+                            Tuple.second range
 
-                                margin =
-                                    10 - highlightModifier
+                        normalizer =
+                            (bar.value - min) / (max - min)
 
-                                height =
-                                    model.height - (truncate ((toFloat model.height) * normalizer)) - margin
+                        margin =
+                            10 - highlightModifier
+
+                        height =
+                            model.height - (truncate ((toFloat model.height) * normalizer)) - margin
 
 
-                                width =
-                                    (model.width - 20) // (List.length model.data) - margin
+                        width =
+                            (model.width - 20) // (List.length model.data) - margin
 
-                                xCoor =
-                                    (toFloat (width + margin)) * ((toFloat iter) + 1 / 2)
+                        xCoor =
+                            (toFloat (width + margin)) * ((toFloat iter) + 1 / 2)
 
-                                delay =
-                                    (toString ((toFloat iter) / 24)) ++ "s"
+                        delay =
+                            (toString ((toFloat iter) / 24)) ++ "s"
 
-                                start =
-                                    (toString (model.height - 10))
+                        start =
+                            (toString (model.height - 10))
 
-                                end =
-                                    (toString height)
+                        end =
+                            (toString height)
 
-                                infoBox = label xCoor (toFloat (height - 50)) bar.label (toString bar.value)
+                        infoBox = label xCoor (toFloat (height - 50)) bar.label (toString bar.value)
 
-                                updatedInfoBoxes = if bar.isHighlighted then
-                                  infoBoxes ++ [infoBox]
-                                else
-                                  infoBoxes
+                        updatedInfoBoxes = if bar.isHighlighted then
+                          infoBoxes ++ [infoBox]
+                        else
+                          infoBoxes
 
-                            in
-                                ([ line
-                                    [ y1 start
-                                    , y2 start
-                                    , x1 (toString xCoor)
-                                    , x2 (toString xCoor)
-                                    , strokeWidth (toString width)
-                                    , stroke bar.color
-                                    , onMouseOver (Msgs.Msg_ (BarGraphMouseOver bar model.id))
-                                    , onMouseOut (Msgs.Msg_ (BarGraphMouseOut bar model.id))
-                                    ]
-                                    (animateLoad start end delay)
-                                 ]
-                                )
-                                    ++ (bars model (iter + 1) updatedInfoBoxes)
-
-                        Nothing ->
-                            []
+                    in
+                        ([ line
+                            [ y1 start
+                            , y2 start
+                            , x1 (toString xCoor)
+                            , x2 (toString xCoor)
+                            , strokeWidth (toString width)
+                            , stroke bar.color
+                            , onMouseOver (Msgs.Msg_ (BarGraphMouseOver bar model.id))
+                            , onMouseOut (Msgs.Msg_ (BarGraphMouseOut bar model.id))
+                            ]
+                            (animateLoad start end delay)
+                         ]
+                        )
+                            ++ (bars model (iter + 1) updatedInfoBoxes)
 
                 Nothing ->
                     []

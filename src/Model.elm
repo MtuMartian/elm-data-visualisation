@@ -35,7 +35,7 @@ type alias BarModel =
     , data : List BarDataModel
     , height : Int
     , width : Int
-    , range : Maybe ( Float, Float )
+    , range : ( Float, Float )
     }
 
 type alias BarDataModel =

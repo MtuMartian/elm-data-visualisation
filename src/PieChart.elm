@@ -54,15 +54,6 @@ view data mdl id =
         in
           div [ onCreate (Msgs.Msg_ (PieChartCreated id model )) ] []
 
-{--
-view : Model -> Html Msg
-view model =
-    div []
-        [ svg
-            [ width (toString model.width), height (toString model.height), viewBox ("0 0 " ++ (toString model.width) ++ " " ++ (toString model.height)) ]
-            (slices model 0 0)
-        ]
---}
 
 slices : PieModel -> Int -> Float -> List (Svg Msg)
 slices model iter prev =
@@ -78,7 +69,6 @@ slices model iter prev =
                 Just slice ->
                     let
                         radius = toFloat model.radius
-                            --(Basics.min model.width model.height |> toFloat) / 2
 
                         center =
                             ( radius, radius )
@@ -92,7 +82,7 @@ slices model iter prev =
                         end =
                             prev + (normalizedValue * 360)
                     in
-                        Svg.path [ d (arc center radius start end), stroke "transparent", fill (randColor iter) ] []
+                        Svg.path [ d (arc center radius start end), stroke "white", strokeWidth "1", fill (randColor iter) ] []
                             :: (slices model (iter + 1) end)
 
                 Nothing ->
@@ -106,13 +96,13 @@ randColor s =
             initialSeed s
 
         gen =
-            Random.int 20 99
+            Random.int 10 99
 
         rt =
             Random.step gen seed
 
-        r =
-            Tuple.first rt
+        r = 10
+            --Tuple.first rt
 
         gt =
             Random.step gen (Tuple.second rt)

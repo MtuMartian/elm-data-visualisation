@@ -2,16 +2,16 @@ module BarGraph exposing (..)
 
 import Array
 import Attributes exposing (..)
+import CSS exposing (box)
 import Dict exposing (..)
 import Html exposing (Html, div, text)
+import Html.Attributes as HAttr exposing (style)
 import Model exposing (..)
 import Msgs exposing (Msg)
 import ChartingMessages exposing (..)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
 import Svg.Events as Events exposing (onClick, onMouseOver, onMouseOut)
-import Json.Decode as Json
-import Html.Events as HEvents exposing (on)
 
 
 -- MODEL
@@ -48,8 +48,6 @@ defaultData =
     ]
 
 
-
--- UPDATE
 -- VIEW
 
 
@@ -58,15 +56,13 @@ view data mdl id =
     let
         model =
             Dict.get id mdl.barGraphs
-
-        --model = defaultModelWithData data
     in
         case model of
             Just model ->
                 div [ onCreate (Msgs.Msg_ (BarGraphCreated id model)) ]
                     [ svg
                         [ width (toString model.width), height (toString model.height), viewBox ("0 0 " ++ (toString model.width) ++ " " ++ (toString model.height)) ]
-                        ((axes model) ++ (bars model 0))
+                        ((axes model) ++ (bars model 0))-- ++ boxText
                     ]
 
             Nothing ->
@@ -76,6 +72,9 @@ view data mdl id =
                 in
                     div [ onCreate (Msgs.Msg_ (BarGraphCreated id model)) ] []
 
+boxText : Svg Msg
+boxText =
+  foreignObject [x "20", y "20"] [div [HAttr.style box] [Html.text "hello world"]]
 
 axes : BarModel -> List (Svg Msg)
 axes model =
@@ -167,6 +166,13 @@ bars model iter =
                                 test =
                                     Debug.log "Testing bar: " bar
 
+                                labelElement =
+                                  if bar.isHighlighted then
+                                    label xCoor (toFloat (height - 50)) bar.label (toString bar.value)
+                                  else
+                                    Svg.text ""
+                                  --foreignObject [x "20", y "20"] [div [HAttr.style box] [Html.text "hello world"]]
+
                                 labelString =
                                     if bar.isHighlighted then
                                         bar.label
@@ -184,7 +190,7 @@ bars model iter =
                                     , onMouseOut (Msgs.Msg_ (BarGraphMouseOut bar model.id))
                                     ]
                                     (animateLoad start end delay)
-                                 , (label xCoor (toFloat (height - 10)) labelString)
+                                 , labelElement --(label xCoor (toFloat (height - 10)) labelString)
                                  ]
                                 )
                                     ++ (bars model (iter + 1))
@@ -196,9 +202,10 @@ bars model iter =
                     []
 
 
-label : Float -> Float -> String -> Svg Msg
-label xCoor yCoor txt =
-    Svg.text_ [ x (toString xCoor), y (toString yCoor), textAnchor "middle" ] [ Svg.text txt ]
+label : Float -> Float -> String -> String -> Svg Msg
+label xCoor yCoor label value =
+  foreignObject [ x (toString xCoor), y (toString yCoor) ] [ div [HAttr.style box] [Html.b [] [Html.text (label ++ ": ")], Html.text value]]
+    --Svg.text_ [ x (toString xCoor), y (toString yCoor), textAnchor "middle" ] [ Svg.text txt ]
 
 
 animateLoad : String -> String -> String -> List (Svg Msg)

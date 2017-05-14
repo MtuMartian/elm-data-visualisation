@@ -1,7 +1,9 @@
 module Main exposing (..)
 
+import CSS exposing (box)
 import Html exposing (Html, div, text, program)
-import Model exposing (BarModel, BarDataModel, Model, ChartModel, init, PieModel, PieDataModel, BoxPlotModel, BoxDataModel)
+import Html.Attributes exposing (style)
+import Model exposing (BarModel, BarDataModel, ChartModel, init, PieModel, PieDataModel, BoxPlotModel, BoxDataModel)
 import Msgs exposing (..)
 import BarGraph exposing (view, defaultModel, defaultModelWithData)
 import ChartingMessages exposing (..)
@@ -34,11 +36,17 @@ view : Model -> Html Msg
 view model =
     div []
         [ BarGraph.view testData model.mdl "1"
-        , BarGraph.view testData2 model.mdl "2"
+        --, BarGraph.view testData2 model.mdl "2"
         , PieChart.view testData3 model.mdl "1"
         , BoxPlot.view testData4 model.mdl "1"
+        , textWithBox
         ]
 
+
+textWithBox : Html Msg
+textWithBox =
+  div [ style box ]
+    [ text "test" ]
 
 
 -- SUBSCRIPTIONS

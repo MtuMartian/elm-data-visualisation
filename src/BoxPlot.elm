@@ -40,12 +40,6 @@ view data mdl id =
               defaultModelWithData data id
           in
             div [ onCreate (Msgs.Msg_ (BoxPlotCreated id model))] []
-    {--div
-        []
-        [ svg
-            [ width (toString model.width), height (toString model.height), viewBox ("0 0 " ++ (toString model.width) ++ " " ++ (toString model.height)) ]
-            (boxPlot model)
-        ]--}
 
 
 boxPlot : BoxPlotModel -> List (Svg Msg)
@@ -120,17 +114,7 @@ drawMedianLine model =
                         case med of
                             Just med ->
                                 let
-                                    range =
-                                        Debug.log "RANGE: " (max - min)
-
-                                    maprint =
-                                        Debug.log "Max: " max
-
-                                    miprint =
-                                        Debug.log "Min: " min
-
-                                    meprint =
-                                        Debug.log "Med: " med
+                                    range = (max - min)
 
                                     normalized =
                                         (med - min) / range
@@ -209,12 +193,6 @@ drawBox model =
                                 case min of
                                     Just min ->
                                         let
-                                            m1debug =
-                                                Debug.log "First quartile: " med1
-
-                                            m2debug =
-                                                Debug.log "Third quartile: " med2
-
                                             margin =
                                                 10
 

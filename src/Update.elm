@@ -1,10 +1,9 @@
 module Update exposing (..)
 
 import ChartingMessages exposing (..)
-import Debug
 import Dict exposing (..)
 import Msgs exposing (Msg(..))
-import Model exposing (Model, ChartModel, BarModel)
+import Model exposing (ChartModel, BarModel)
 
 
 chartUpdate : ChartMsg -> ChartModel -> ( ChartModel, Cmd Msg )

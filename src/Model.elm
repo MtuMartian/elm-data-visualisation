@@ -5,14 +5,6 @@ import Dict exposing (..)
 
 -- MODELS
 
-
-type alias ChartModel =
-    { barGraphs : Dict String BarModel
-    , pieCharts : Dict String PieModel
-    , boxPlots : Dict String BoxPlotModel
-    }
-
-
 init : ChartModel
 init =
     { barGraphs = Dict.empty
@@ -20,30 +12,11 @@ init =
     , boxPlots = Dict.empty
     }
 
-
-type alias Model =
-    { chartType : ChartType
-    , data : List DataModel
-    , label : String
-    , height : Int
-    , width : Int
-    , range : Maybe ( Float, Float )
+type alias ChartModel =
+    { barGraphs : Dict String BarModel
+    , pieCharts : Dict String PieModel
+    , boxPlots : Dict String BoxPlotModel
     }
-
-
-type ChartType
-    = BarGraph
-    | PieChart
-    | BoxPlot
-
-
-type alias DataModel =
-    { id : Int
-    , value : Float
-    , label : String
-    , isHighlighted : Bool
-    }
-
 
 type alias PieModel =
   { id : String
@@ -59,12 +32,11 @@ type alias PieDataModel =
 
 type alias BarModel =
     { id : String
-    , data : List DataModel
+    , data : List BarDataModel
     , height : Int
     , width : Int
     , range : Maybe ( Float, Float )
     }
-
 
 type alias BarDataModel =
     { id : Int

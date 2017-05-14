@@ -74,12 +74,12 @@ axes model =
             , x2 "10"
             , y1 "0"
             , y2 (toString (model.height - 10))
-            , strokeWidth "2"
+            , strokeWidth "0"
             , stroke "black"
             ]
             []
         , line
-            [ x1 "10"
+            [ x1 "0"
             , x2 (toString (model.width - 10))
             , y1 (toString (model.height - 10))
             , y2 (toString (model.height - 10))
@@ -88,19 +88,21 @@ axes model =
             ]
             []
         ]
-        (ticks model 0 6)
+        (crossSections model 0 6)
 
 
-ticks : BarModel -> Int -> Int -> List (Svg Msg)
-ticks model iter total =
+crossSections : BarModel -> Int -> Int -> List (Svg Msg)
+crossSections model iter total =
     if iter >= total then
         []
     else
         let
             height =
-                toString (model.height * iter // total)
+                toString (model.height - (model.height * iter // total) - 10)
+            width =
+                toString (model.width)
         in
-            (line [ x1 "0", x2 "20", y1 height, y2 height, strokeWidth "2", stroke "black" ] []) :: (ticks model (iter + 1) total)
+            [(line [ x1 "0", x2 width, y1 height, y2 height, strokeWidth "1", stroke "gray" ] [])] ++ (crossSections model (iter + 1) total)
 
 
 bars : BarModel -> Int -> List (Svg Msg) -> List (Svg Msg)
@@ -143,7 +145,7 @@ bars model iter infoBoxes =
                                     (model.width - 20) // (List.length model.data) - margin
 
                                 xCoor =
-                                    (toFloat (width + margin)) * ((toFloat iter) + 1 / 2) + 20
+                                    (toFloat (width + margin)) * ((toFloat iter) + 1 / 2)
 
                                 delay =
                                     (toString ((toFloat iter) / 24)) ++ "s"

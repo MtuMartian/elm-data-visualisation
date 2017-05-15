@@ -73,23 +73,23 @@ main =
 
 testData : List BarDataModel
 testData =
-    [ { id = 1, value = 1, label = "Longer Label", isHighlighted = False }
-    , { id = 2, value = 4, label = "p2", isHighlighted = False }
-    , { id = 3, value = 9, label = "p3", isHighlighted = False }
-    , { id = 4, value = 16, label = "p4", isHighlighted = False }
-    , { id = 5, value = 10, label = "p2", isHighlighted = False }
+    [ { id = 1, value = 1, label = "Longer Label", isHighlighted = False, color = "#005000" }
+    , { id = 2, value = 4, label = "p2", isHighlighted = False, color = "#252500" }
+    , { id = 3, value = 9, label = "p3", isHighlighted = False, color = "#000050" }
+    , { id = 4, value = 16, label = "p4", isHighlighted = False, color = "#202505" }
+    , { id = 5, value = 10, label = "p2", isHighlighted = False, color = "#250025" }
     ]
 
 
 testData2 : List BarDataModel
 testData2 =
-    [ { id = 1, value = 2, label = "Longer Label", isHighlighted = False }
-    , { id = 2, value = 4, label = "p2", isHighlighted = False }
-    , { id = 3, value = 6, label = "p3", isHighlighted = False }
-    , { id = 4, value = 8, label = "p4", isHighlighted = False }
-    , { id = 5, value = 10, label = "p2", isHighlighted = False }
-    , { id = 6, value = 8, label = "p4", isHighlighted = False }
-    , { id = 7, value = 10, label = "p2", isHighlighted = False }
+    [ { id = 1, value = 2, label = "Longer Label", isHighlighted = False, color = "#00ff00" }
+    , { id = 2, value = 4, label = "p2", isHighlighted = False, color = "#00ff00" }
+    , { id = 3, value = 6, label = "p3", isHighlighted = False, color = "#00ff00" }
+    , { id = 4, value = 8, label = "p4", isHighlighted = False, color = "#00ff00" }
+    , { id = 5, value = 10, label = "p2", isHighlighted = False, color = "#00ff00" }
+    , { id = 6, value = 8, label = "p4", isHighlighted = False, color = "#00ff00" }
+    , { id = 7, value = 10, label = "p2", isHighlighted = False, color = "#00ff00" }
     ]
 
 testData3 : List PieDataModel

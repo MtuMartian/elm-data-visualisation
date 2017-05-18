@@ -66,17 +66,8 @@ axes : BarModel -> List (Svg Msg)
 axes model =
     List.append
         [ line
-            [ x1 "10"
-            , x2 "10"
-            , y1 "0"
-            , y2 (toString (model.height - 10))
-            , strokeWidth "0"
-            , stroke "black"
-            ]
-            []
-        , line
-            [ x1 "0"
-            , x2 (toString (model.width - 10))
+            [ x1 "20"
+            , x2 (toString model.width)
             , y1 (toString (model.height - 10))
             , y2 (toString (model.height - 10))
             , strokeWidth "2"
@@ -105,9 +96,9 @@ crossSections model iter total =
                 (Tuple.first model.range) + ((range / (toFloat total)) * (toFloat iter)) |> toString
 
         in
-            [ line [ x1 "0", x2 width, y1 ( toString height), y2 (toString height), strokeWidth "1", stroke "gray" ] []
+            [ line [ x1 "20", x2 width, y1 ( toString height), y2 (toString height), strokeWidth "1", stroke "gray" ] []
             , Svg.text_
-                [ x "10", y (toString (height - 5)) ]
+                [ x "18", y (toString (height)), textAnchor "end", alignmentBaseline "middle" ]
                 [Svg.text value ]
             ]
             ++ (crossSections model (iter + 1) total)
@@ -142,6 +133,9 @@ bars model iter infoBoxes =
                         normalizer =
                             (bar.value - min) / (max - min)
 
+                        leftMargin =
+                            20
+
                         margin =
                             10 - highlightModifier
 
@@ -153,7 +147,7 @@ bars model iter infoBoxes =
                             (model.width - 20) // (List.length model.data) - margin
 
                         xCoor =
-                            (toFloat (width + margin)) * ((toFloat iter) + 1 / 2)
+                            (toFloat (width + margin)) * ((toFloat iter) + 1 / 2) + leftMargin
 
                         delay =
                             (toString ((toFloat iter) / 24)) ++ "s"

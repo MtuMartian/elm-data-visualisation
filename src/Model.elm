@@ -28,6 +28,7 @@ type alias PieDataModel =
   { id : Int
   , value : Float
   , label : String
+  , isHighlighted : Bool
   }
 
 type alias BarModel =

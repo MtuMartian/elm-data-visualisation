@@ -11,6 +11,8 @@ import ChartingMessages exposing (..)
 import Random exposing (..)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
+import Svg.Events as Events exposing (onMouseOver, onMouseOut)
+import SvgViews exposing (label)
 
 
 dataSum : List PieDataModel -> Float
@@ -27,9 +29,9 @@ defaultModelWithData data id =
 
 defaultData : List PieDataModel
 defaultData =
-  [ { id = 1, value = 1, label = "s1" }
-  , { id = 2, value = 1, label = "s2" }
-  , { id = 3, value = 3, label = "s3" }
+  [ { id = 1, value = 1, label = "s1", isHighlighted = False }
+  , { id = 2, value = 1, label = "s2", isHighlighted = True }
+  , { id = 3, value = 3, label = "s3", isHighlighted = False }
   ]
 
 -- VIEW
@@ -45,7 +47,7 @@ view data mdl id =
         div [ onCreate (Msgs.Msg_ (PieChartCreated id model)) ]
             [ svg
                 [ width (toString (model.radius * 2)), height (toString (model.radius * 2)), viewBox ("0 0 " ++ (toString (model.radius * 2)) ++ " " ++ (toString (model.radius * 2))) ]
-                (slices model 0 0)
+                (slices model 0 0 [])
             ]
       Nothing ->
         let
@@ -55,10 +57,10 @@ view data mdl id =
           div [ onCreate (Msgs.Msg_ (PieChartCreated id model )) ] []
 
 
-slices : PieModel -> Int -> Float -> List (Svg Msg)
-slices model iter prev =
+slices : PieModel -> Int -> Float -> List (Svg Msg) -> List (Svg Msg)
+slices model iter prev infoBoxes =
     if iter >= (List.length model.data) then
-        []
+        infoBoxes
     else
         let
             slice =
@@ -68,7 +70,7 @@ slices model iter prev =
             case slice of
                 Just slice ->
                     let
-                        radius = toFloat model.radius
+                        radius = model.radius // 2 |> toFloat
 
                         center =
                             ( radius, radius )
@@ -81,9 +83,25 @@ slices model iter prev =
 
                         end =
                             prev + (normalizedValue * 360)
+
+                        --infoBox = label radius radius slice.label (toString slice.value)
+                        infoBox = sliceLabel center radius start end slice
+
+                        updatedInfoBoxes =
+                          if slice.isHighlighted then
+                            infoBox :: infoBoxes
+                          else
+                            infoBoxes
+
                     in
-                        Svg.path [ d (arc center radius start end), stroke "white", strokeWidth "1", fill (randColor iter) ] []
-                            :: (slices model (iter + 1) end)
+                        Svg.path
+                          [ d (arc center radius start end)
+                          , stroke "white"
+                          , strokeWidth "1"
+                          , fill (randColor iter)
+                          , onMouseOver (Msgs.Msg_ (PieChartMouseOver slice model.id))
+                          , onMouseOut (Msgs.Msg_ (PieChartMouseOut slice model.id)) ] []
+                            :: (slices model (iter + 1) end updatedInfoBoxes)
 
                 Nothing ->
                     []
@@ -140,6 +158,14 @@ polarToCart center radius angle =
     in
         ( x, y )
 
+
+sliceLabel : ( Float, Float ) -> Float -> Float -> Float -> PieDataModel -> Svg Msg
+sliceLabel center radius start end data =
+  let
+    middle = (start + end) / 2
+    pos = polarToCart center radius middle
+  in
+    label (Tuple.first pos) (Tuple.second pos) data.label (toString data.value)
 
 
 -- Creates an arc with given parameters

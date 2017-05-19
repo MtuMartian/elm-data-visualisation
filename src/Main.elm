@@ -94,10 +94,10 @@ testData2 =
 
 testData3 : List PieDataModel
 testData3 =
-    [ { id = 1, value = 2, label = "Longer Label" }
-    , { id = 2, value = 4, label = "p2" }
-    , { id = 3, value = 6, label = "p3" }
-    , { id = 4, value = 8, label = "p4" }
+    [ { id = 1, value = 2, label = "Longer Label", isHighlighted = False }
+    , { id = 2, value = 4, label = "p2", isHighlighted = False }
+    , { id = 3, value = 6, label = "p3", isHighlighted = False }
+    , { id = 4, value = 8, label = "p4", isHighlighted = False }
     ]
 
 testData4 : List BoxDataModel

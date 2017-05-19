@@ -67,6 +67,66 @@ chartUpdate msg model =
                     Nothing ->
                         ( model, Cmd.none )
 
+        PieChartMouseOver data id ->
+          let
+            pieModel =
+              Dict.get id model.pieCharts
+          in
+            case pieModel of
+              Just pieModel ->
+                let
+                  updatedData =
+                    List.map
+                      (\x ->
+                        if x.id == data.id then
+                          { x | isHighlighted = True }
+                        else
+                          x
+                      )
+                      pieModel.data
+
+                  updatedPieModel =
+                    { pieModel | data = updatedData }
+
+                  updatedDict =
+                    Dict.insert id updatedPieModel model.pieCharts
+
+                in
+                  ( { model | pieCharts = updatedDict }, Cmd.none )
+
+              Nothing ->
+                ( model, Cmd.none )
+
+        PieChartMouseOut data id ->
+          let
+            pieModel =
+              Dict.get id model.pieCharts
+          in
+            case pieModel of
+              Just pieModel ->
+                let
+                  updatedData =
+                    List.map
+                      (\x ->
+                        if x.id == data.id then
+                          { x | isHighlighted = False }
+                        else
+                          x
+                      )
+                      pieModel.data
+
+                  updatedPieModel =
+                    { pieModel | data = updatedData }
+
+                  updatedDict =
+                    Dict.insert id updatedPieModel model.pieCharts
+
+                in
+                  ( { model | pieCharts = updatedDict }, Cmd.none )
+
+              Nothing ->
+                ( model, Cmd.none )
+
         BarGraphCreated id barModel ->
             let
                 updatedDict =

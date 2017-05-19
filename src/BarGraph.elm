@@ -12,6 +12,7 @@ import ChartingMessages exposing (..)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
 import Svg.Events as Events exposing (onClick, onMouseOver, onMouseOut)
+import SvgViews exposing (label)
 
 
 -- MODEL
@@ -189,12 +190,6 @@ bars model iter infoBoxes =
 
                 Nothing ->
                     []
-
-
-label : Float -> Float -> String -> String -> Svg Msg
-label xCoor yCoor label value =
-  foreignObject [ x (toString xCoor), y (toString yCoor) ] [ div [HAttr.style box] [Html.b [] [Html.text (label ++ ": ")], Html.text value]]
-    --Svg.text_ [ x (toString xCoor), y (toString yCoor), textAnchor "middle" ] [ Svg.text txt ]
 
 
 animateLoad : String -> String -> String -> List (Svg Msg)

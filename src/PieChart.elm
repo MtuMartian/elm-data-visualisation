@@ -93,15 +93,21 @@ slices model iter prev infoBoxes =
                           else
                             infoBoxes
 
+
                     in
-                        Svg.path
+                        [Svg.path
                           [ d (arc center radius start end)
                           , stroke "white"
                           , strokeWidth "1"
-                          , fill (randColor iter)
+                          , fill  (randColor iter)
                           , onMouseOver (Msgs.Msg_ (PieChartMouseOver slice model.id))
                           , onMouseOut (Msgs.Msg_ (PieChartMouseOut slice model.id)) ] []
-                            :: (slices model (iter + 1) end updatedInfoBoxes)
+                          , Svg.path
+                              [ d (ringArc center (radius + 3) start end)
+                              , stroke "black"
+                              , strokeWidth "5"
+                              , fill "none" ] [] ]
+                            ++ (slices model (iter + 1) end updatedInfoBoxes)
 
                 Nothing ->
                     []
@@ -205,7 +211,7 @@ arc center radius start end =
                 "1"
 
         res =
-            String.join
+            Debug.log "" (String.join
                 " "
                 ([ "M"
                  , centerX
@@ -223,6 +229,62 @@ arc center radius start end =
                  , endY
                  , "Z"
                  ]
-                )
+                ))
+    in
+        res
+
+ringArc : ( Float, Float ) -> Float -> Float -> Float -> String
+ringArc center radius start end =
+    let
+        centerX =
+            toString (Tuple.first center)
+
+        centerY =
+            toString (Tuple.second center)
+
+        startCoor =
+            polarToCart center radius end
+
+        startX =
+            toString (Tuple.first startCoor)
+
+        startY =
+            toString (Tuple.second startCoor)
+
+        endCoor =
+            polarToCart center radius start
+
+        endX =
+            toString (Tuple.first endCoor)
+
+        endY =
+            toString (Tuple.second endCoor)
+
+        large =
+            if (end - start) <= 180 then
+                "0"
+            else
+                "1"
+
+        res =
+            Debug.log "" (String.join
+                " "
+                ([ "M"
+                 , startX--, centerX
+                 , startY--, centerY
+                 --, "L"
+                 --, startX
+                 --, startY
+                 , "A"
+                 , toString radius--, centerX
+                 , toString radius--, centerY
+                 , "0"
+                 , large
+                 , "0"
+                 , endX
+                 , endY
+                 --, "Z"
+                 ]
+                ))
     in
         res

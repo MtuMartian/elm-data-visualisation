@@ -93,21 +93,32 @@ slices model iter prev infoBoxes =
                           else
                             infoBoxes
 
+                        outerRing =
+                          if slice.isHighlighted then
+                            [ Svg.path
+                                [ d (ringArc center (radius + 3) start end)
+                                , stroke "black"
+                                , strokeWidth "5"
+                                , fill "none" ] []
+                            ]
+                          else
+                            []
+
 
                     in
-                        [Svg.path
-                          [ d (arc center radius start end)
-                          , stroke "white"
-                          , strokeWidth "1"
-                          , fill  (randColor iter)
-                          , onMouseOver (Msgs.Msg_ (PieChartMouseOver slice model.id))
-                          , onMouseOut (Msgs.Msg_ (PieChartMouseOut slice model.id)) ] []
-                          , Svg.path
-                              [ d (ringArc center (radius + 3) start end)
-                              , stroke "black"
-                              , strokeWidth "5"
-                              , fill "none" ] [] ]
-                            ++ (slices model (iter + 1) end updatedInfoBoxes)
+                        [ Svg.path
+                            [ d (arc center radius start end)
+                            , stroke "white"
+                            , strokeWidth "1"
+                            , fill  (randColor iter)
+                            , onMouseOver (Msgs.Msg_ (PieChartMouseOver slice model.id))
+                            , onMouseOut (Msgs.Msg_ (PieChartMouseOut slice model.id))
+                            ]
+                            []
+                        ]
+                        ++
+                        outerRing
+                        ++ (slices model (iter + 1) end updatedInfoBoxes)
 
                 Nothing ->
                     []

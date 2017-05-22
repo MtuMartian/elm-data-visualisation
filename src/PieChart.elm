@@ -87,6 +87,8 @@ slices model iter prev infoBoxes =
                         --infoBox = label radius radius slice.label (toString slice.value)
                         infoBox = sliceLabel center radius start end slice
 
+                        sliceColor = randColor (iter * 4)
+
                         updatedInfoBoxes =
                           if slice.isHighlighted then
                             infoBox :: infoBoxes
@@ -97,7 +99,8 @@ slices model iter prev infoBoxes =
                           if slice.isHighlighted then
                             [ Svg.path
                                 [ d (ringArc center (radius + 3) start end)
-                                , stroke "black"
+                                , stroke sliceColor
+                                , opacity "0.4"
                                 , strokeWidth "5"
                                 , fill "none" ] []
                             ]
@@ -110,7 +113,7 @@ slices model iter prev infoBoxes =
                             [ d (arc center radius start end)
                             , stroke "white"
                             , strokeWidth "1"
-                            , fill  (randColor iter)
+                            , fill  sliceColor
                             , onMouseOver (Msgs.Msg_ (PieChartMouseOver slice model.id))
                             , onMouseOut (Msgs.Msg_ (PieChartMouseOut slice model.id))
                             ]

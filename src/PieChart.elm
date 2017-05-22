@@ -98,10 +98,11 @@ slices model iter prev infoBoxes =
                         outerRing =
                           if slice.isHighlighted then
                             [ Svg.path
-                                [ d (ringArc center (radius + 3) start end)
+                                [ d (ringArc center (radius + 5) start end)
                                 , stroke sliceColor
                                 , opacity "0.4"
-                                , strokeWidth "5"
+                                , strokeWidth "8"
+                                , transform "translate(15 15)"
                                 , fill "none" ] []
                             ]
                           else
@@ -114,6 +115,7 @@ slices model iter prev infoBoxes =
                             , stroke "white"
                             , strokeWidth "1"
                             , fill  sliceColor
+                            , transform "translate(15 15)"
                             , onMouseOver (Msgs.Msg_ (PieChartMouseOver slice model.id))
                             , onMouseOut (Msgs.Msg_ (PieChartMouseOut slice model.id))
                             ]
@@ -201,7 +203,7 @@ arc center radius start end =
             toString (Tuple.second center)
 
         startCoor =
-            polarToCart center radius end
+            polarToCart center (radius) end
 
         startX =
             toString (Tuple.first startCoor)
@@ -210,7 +212,7 @@ arc center radius start end =
             toString (Tuple.second startCoor)
 
         endCoor =
-            polarToCart center radius start
+            polarToCart center (radius) start
 
         endX =
             toString (Tuple.first endCoor)

@@ -87,21 +87,43 @@ slices model iter prev infoBoxes =
                         --infoBox = label radius radius slice.label (toString slice.value)
                         infoBox = sliceLabel center radius start end slice
 
+                        sliceColor = randColor (iter * 4)
+
                         updatedInfoBoxes =
                           if slice.isHighlighted then
                             infoBox :: infoBoxes
                           else
                             infoBoxes
 
+                        outerRing =
+                          if slice.isHighlighted then
+                            [ Svg.path
+                                [ d (ringArc center (radius + 5) start end)
+                                , stroke sliceColor
+                                , opacity "0.4"
+                                , strokeWidth "8"
+                                , transform "translate(15 15)"
+                                , fill "none" ] []
+                            ]
+                          else
+                            []
+
+
                     in
-                        Svg.path
-                          [ d (arc center radius start end)
-                          , stroke "white"
-                          , strokeWidth "1"
-                          , fill (randColor iter)
-                          , onMouseOver (Msgs.Msg_ (PieChartMouseOver slice model.id))
-                          , onMouseOut (Msgs.Msg_ (PieChartMouseOut slice model.id)) ] []
-                            :: (slices model (iter + 1) end updatedInfoBoxes)
+                        [ Svg.path
+                            [ d (arc center radius start end)
+                            , stroke "white"
+                            , strokeWidth "1"
+                            , fill  sliceColor
+                            , transform "translate(15 15)"
+                            , onMouseOver (Msgs.Msg_ (PieChartMouseOver slice model.id))
+                            , onMouseOut (Msgs.Msg_ (PieChartMouseOut slice model.id))
+                            ]
+                            []
+                        ]
+                        ++
+                        outerRing
+                        ++ (slices model (iter + 1) end updatedInfoBoxes)
 
                 Nothing ->
                     []
@@ -181,6 +203,62 @@ arc center radius start end =
             toString (Tuple.second center)
 
         startCoor =
+            polarToCart center (radius) end
+
+        startX =
+            toString (Tuple.first startCoor)
+
+        startY =
+            toString (Tuple.second startCoor)
+
+        endCoor =
+            polarToCart center (radius) start
+
+        endX =
+            toString (Tuple.first endCoor)
+
+        endY =
+            toString (Tuple.second endCoor)
+
+        large =
+            if (end - start) <= 180 then
+                "0"
+            else
+                "1"
+
+        res =
+            Debug.log "" (String.join
+                " "
+                ([ "M"
+                 , centerX
+                 , centerY
+                 , "L"
+                 , startX
+                 , startY
+                 , "A"
+                 , centerX
+                 , centerY
+                 , "0"
+                 , large
+                 , "0"
+                 , endX
+                 , endY
+                 , "Z"
+                 ]
+                ))
+    in
+        res
+
+ringArc : ( Float, Float ) -> Float -> Float -> Float -> String
+ringArc center radius start end =
+    let
+        centerX =
+            toString (Tuple.first center)
+
+        centerY =
+            toString (Tuple.second center)
+
+        startCoor =
             polarToCart center radius end
 
         startX =
@@ -205,24 +283,24 @@ arc center radius start end =
                 "1"
 
         res =
-            String.join
+            Debug.log "" (String.join
                 " "
                 ([ "M"
-                 , centerX
-                 , centerY
-                 , "L"
-                 , startX
-                 , startY
+                 , startX--, centerX
+                 , startY--, centerY
+                 --, "L"
+                 --, startX
+                 --, startY
                  , "A"
-                 , centerX
-                 , centerY
+                 , toString radius--, centerX
+                 , toString radius--, centerY
                  , "0"
                  , large
                  , "0"
                  , endX
                  , endY
-                 , "Z"
+                 --, "Z"
                  ]
-                )
+                ))
     in
         res

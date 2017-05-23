@@ -25,15 +25,15 @@ defaultModelWithData data id width height =
     , data = data
     , width = width
     , height = height
-    , margin = 60
+    , margin = 25
     , range = ( 0, 30 )
     , min = 0
     , max = 30
     , ticks = 6
-    , partLeft = 80
-    , partRight = 200
-    , partAbove = 40
-    , partBelow = 40
+    , partLeft = 120
+    , partRight = 120
+    , partAbove = 50
+    , partBelow = 50
     , title = "Bar Chart"
     , vertTitle = "Values"
     , horiTitle = "Entries"
@@ -68,18 +68,65 @@ view data attributes dimensions mdl id =
 
 axes : BarModel -> List (Svg Msg)
 axes model =
-    List.append
+    --List.append
         [ line
             [ x1 (toString model.partLeft)
             , x2 (toString (model.width - model.partRight))
-            , y1 (toString (model.height - 10))
-            , y2 (toString (model.height - 10))
+            , y1 (toString (model.height - model.partBelow))
+            , y2 (toString (model.height - model.partBelow))
             , strokeWidth "2"
             , stroke "black"
             ]
             []
         ]
+        ++
         (crossSections model 0)
+        ++
+        (horiAxisTitle model)
+        ++
+        (vertAxisTitle model)
+        ++
+        ( mainTitle model)
+
+horiAxisTitle : BarModel -> List (Svg Msg)
+horiAxisTitle model =
+  let
+    contentWidth = model.width - model.partLeft - model.partRight
+    xCoor = contentWidth // 2 + model.partLeft |> toString
+    yCoor = model.height - model.partBelow // 2 |> toString
+
+  in
+    [ Svg.text_
+        [ x xCoor, y yCoor, textAnchor "middle", alignmentBaseline "middle" ]
+        [ Svg.text model.horiTitle ]
+    ]
+
+vertAxisTitle : BarModel -> List (Svg Msg)
+vertAxisTitle model =
+  let
+    contentHeight = model.height - model.partBelow - model.partAbove
+    xCoor = model.partLeft // 2 |> toString
+    yCoor = contentHeight // 2 + model.partAbove |> toString
+
+  in
+    [ Svg.text_
+        [ x xCoor, y yCoor, width (toString model.partLeft), textAnchor "middle", alignmentBaseline "middle" ]
+        [ Svg.text model.vertTitle ]
+    ]
+
+mainTitle : BarModel -> List (Svg Msg)
+mainTitle model =
+  let
+    xCoor = model.width // 2 |> toString
+    yCoor = model.partAbove // 2 |> toString
+
+  in
+    [ Svg.text_
+        [ x xCoor, y yCoor, textAnchor "middle", alignmentBaseline "middle" ]
+        [ Svg.text model.title ]
+    ]
+
+
 
 
 crossSections : BarModel -> Int -> List (Svg Msg)
@@ -91,7 +138,7 @@ crossSections model iter =
             total = model.ticks
 
             height =
-                model.height - (model.height * iter // total) - 10
+                model.height - ((model.height - model.partAbove) * iter // total) - model.partBelow
             width =
                 toString (model.width - model.partRight)
 
@@ -143,7 +190,7 @@ bars model iter infoBoxes =
                             model.margin - highlightModifier
 
                         height =
-                            model.height - (truncate ((toFloat model.height) * normalizer)) - margin
+                            model.height - (truncate ((toFloat (model.height - model.partAbove)) * normalizer)) - model.partBelow
 
 
                         width =
@@ -156,7 +203,7 @@ bars model iter infoBoxes =
                             (toString ((toFloat iter) / 24)) ++ "s"
 
                         start =
-                            (toString (model.height - 10))
+                            (toString (model.height - model.partBelow))
 
                         end =
                             (toString height)

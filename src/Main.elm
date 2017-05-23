@@ -5,11 +5,15 @@ import Html exposing (Html, div, text, program)
 import Html.Attributes exposing (style)
 import Model exposing (BarModel, BarDataModel, ChartModel, init, PieModel, PieDataModel, BoxPlotModel, BoxDataModel)
 import Msgs exposing (..)
-import BarGraph exposing (view, defaultModel, defaultModelWithData)
+import BarGraph exposing (view, defaultModelWithData)
 import ChartingMessages exposing (..)
 import BoxPlot exposing (view)
 import PieChart exposing (view)
 import Update exposing (chartUpdate)
+
+--import Svg exposing (..)
+import Svg.Attributes as Attributes exposing (opacity)
+
 
 
 -- model
@@ -35,7 +39,7 @@ init =
 view : Model -> Html Msg
 view model =
     div []
-        [ BarGraph.view testData model.mdl "1"
+        [ BarGraph.view testData [] (1200, 400) model.mdl "1"
         --, BarGraph.view testData2 model.mdl "2"
         , PieChart.view testData3 model.mdl "1"
         , BoxPlot.view testData4 model.mdl "1"

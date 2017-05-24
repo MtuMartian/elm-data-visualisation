@@ -14,6 +14,8 @@ import Update exposing (chartUpdate)
 --import Svg exposing (..)
 import Svg.Attributes as Attributes exposing (opacity)
 
+import Properties as Props exposing (..)
+
 
 
 -- model
@@ -39,8 +41,8 @@ init =
 view : Model -> Html Msg
 view model =
     div []
-        [ BarGraph.view testData [] (1200, 400) model.mdl "1"
-        --, BarGraph.view testData2 model.mdl "2"
+        [ BarGraph.view testData2 [ Props.title "Different title", Props.margin "8", horiAxisTitle "STUFFS", Props.max "15", Props.min "0" ] (1000, 600) model.mdl "1"
+        , BarGraph.view testData [ Props.title "Second Data Set", Props.margin "16"] (1000, 300) model.mdl "2"
         , PieChart.view testData3 model.mdl "1"
         , BoxPlot.view testData4 model.mdl "1"
         , textWithBox
@@ -77,23 +79,23 @@ main =
 
 testData : List BarDataModel
 testData =
-    [ { id = 1, value = 1, label = "Longer Label", isHighlighted = False, color = "#005000" }
-    , { id = 2, value = 4, label = "p2", isHighlighted = False, color = "#252500" }
+    [ { id = 1, value = 7, label = "Longer Label", isHighlighted = False, color = "#005000" }
+    , { id = 2, value = 24, label = "p2", isHighlighted = False, color = "#252500" }
     , { id = 3, value = 9, label = "p3", isHighlighted = False, color = "#000050" }
-    , { id = 4, value = 16, label = "p4", isHighlighted = False, color = "#202505" }
+    , { id = 4, value = 20, label = "p4", isHighlighted = False, color = "#202505" }
     , { id = 5, value = 10, label = "p2", isHighlighted = False, color = "#250025" }
     ]
 
 
 testData2 : List BarDataModel
 testData2 =
-    [ { id = 1, value = 2, label = "Longer Label", isHighlighted = False, color = "#00ff00" }
-    , { id = 2, value = 4, label = "p2", isHighlighted = False, color = "#00ff00" }
-    , { id = 3, value = 6, label = "p3", isHighlighted = False, color = "#00ff00" }
-    , { id = 4, value = 8, label = "p4", isHighlighted = False, color = "#00ff00" }
-    , { id = 5, value = 10, label = "p2", isHighlighted = False, color = "#00ff00" }
-    , { id = 6, value = 8, label = "p4", isHighlighted = False, color = "#00ff00" }
-    , { id = 7, value = 10, label = "p2", isHighlighted = False, color = "#00ff00" }
+    [ { id = 1, value = 8, label = "Longer Label", isHighlighted = False, color = "#005000" }
+    , { id = 2, value = 4, label = "p2", isHighlighted = False, color = "#000f30" }
+    , { id = 3, value = 6, label = "p3", isHighlighted = False, color = "#4581f2" }
+    , { id = 4, value = 3, label = "p4", isHighlighted = False, color = "#a2b3c4" }
+    , { id = 5, value = 10, label = "p2", isHighlighted = False, color = "#004488" }
+    , { id = 6, value = 8, label = "p4", isHighlighted = False, color = "#050278" }
+    , { id = 7, value = 10, label = "p2", isHighlighted = False, color = "#5fff5f" }
     ]
 
 testData3 : List PieDataModel

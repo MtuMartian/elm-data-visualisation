@@ -13,38 +13,41 @@ import Svg exposing (..)
 import Svg.Attributes exposing (..)
 import Svg.Events as Events exposing (onClick, onMouseOver, onMouseOut)
 import SvgViews exposing (label)
+import Properties exposing (..)
+
+import Util exposing (tupleToDict)
 
 
 -- MODEL
 -- for testing purposes TODO: Replace with more appropriate defaults
 
 
-defaultModelWithData : List BarDataModel -> String -> Int -> Int -> BarModel
-defaultModelWithData data id width height =
+defaultModelWithData : List BarDataModel -> Dict String String -> String -> Int -> Int -> BarModel
+defaultModelWithData data properties id width height =
     { id = id
     , data = data
     , width = width
     , height = height
-    , margin = 25
-    , range = ( 0, 30 )
-    , min = 0
-    , max = 30
-    , ticks = 6
-    , partLeft = 120
-    , partRight = 120
-    , partAbove = 50
-    , partBelow = 50
-    , title = "Bar Chart"
-    , vertTitle = "Values"
-    , horiTitle = "Entries"
+    , margin = Dict.get "margin" properties |> Maybe.withDefault "40" |> String.toInt |> Result.withDefault 40
+    , range = ( 0, 15 )
+    , min = Dict.get "min" properties |> Maybe.withDefault "0" |> String.toFloat |> Result.withDefault 0
+    , max = Dict.get "max" properties |> Maybe.withDefault "30" |> String.toFloat |> Result.withDefault 30
+    , ticks = Dict.get "ticks" properties |> Maybe.withDefault "6" |> String.toInt |> Result.withDefault 6
+    , partLeft = Dict.get "partitionLeft" properties |> Maybe.withDefault "120" |> String.toInt |> Result.withDefault 120
+    , partRight = Dict.get "partitionRight" properties |> Maybe.withDefault "120" |> String.toInt |> Result.withDefault 120
+    , partAbove = Dict.get "partitionAbove" properties |> Maybe.withDefault "50" |> String.toInt |> Result.withDefault 50
+    , partBelow = Dict.get "partitionBelow" properties |> Maybe.withDefault "50" |> String.toInt |> Result.withDefault 50
+    , title = Dict.get "title" properties |> Maybe.withDefault ""
+    , vertTitle = Dict.get "vertTitle" properties |> Maybe.withDefault ""
+    , horiTitle = Dict.get "horiTitle" properties |> Maybe.withDefault ""
     }
 
 
 -- VIEW
 
 
-view : List BarDataModel -> List (Attribute Msg) -> (Int, Int) -> ChartModel -> String -> Html Msg
-view data attributes dimensions mdl id =
+view : List BarDataModel -> List Property -> (Int, Int) -> ChartModel -> String -> Html Msg
+view data properties dimensions mdl id =
     let
         model =
             Dict.get id mdl.barGraphs
@@ -53,16 +56,15 @@ view data attributes dimensions mdl id =
             Just model ->
                 div [ onCreate (Msgs.Msg_ (BarGraphCreated id model)) ]
                     [ svg
-                        ( [ height (toString model.height), width (toString model.width), viewBox ("0 0 " ++ (toString model.width) ++ " " ++ (toString model.height)) ]
-                        ++ attributes
-                        )
+                        [ height (toString model.height), width (toString model.width), viewBox ("0 0 " ++ (toString model.width) ++ " " ++ (toString model.height)) ]
                         ((axes model) ++ (bars model 0 []) ++ [rect [width (toString model.width), height (toString model.height), fill "none", stroke "black", strokeWidth "2"] []]) -- remove this rect
                     ]
 
             Nothing ->
                 let
+                    propertyDict = tupleToDict properties
                     model =
-                        defaultModelWithData data id (Tuple.first dimensions) (Tuple.second dimensions)
+                        defaultModelWithData data propertyDict id (Tuple.first dimensions) (Tuple.second dimensions)
                 in
                     div [ onCreate (Msgs.Msg_ (BarGraphCreated id model)) ] []
 
@@ -143,10 +145,10 @@ crossSections model iter =
                 toString (model.width - model.partRight)
 
             range =
-              (Tuple.second model.range) - (Tuple.first model.range)
+              model.max - model.min
 
             value =
-                (Tuple.first model.range) + ((range / (toFloat total)) * (toFloat iter)) |> toString
+                model.min + ((range / (toFloat total)) * (toFloat iter)) |> toString
 
         in
             [ line [ x1 (toString model.partLeft), x2 width, y1 ( toString height), y2 (toString height), strokeWidth "1", stroke "gray" ] []
@@ -169,7 +171,7 @@ bars model iter infoBoxes =
             case bar of
                 Just bar ->
                     let
-                        range = model.range
+                        range = (model.min, model.max)
 
                         highlightModifier =
                             if bar.isHighlighted then

@@ -34,9 +34,20 @@ type alias PieDataModel =
 type alias BarModel =
     { id : String
     , data : List BarDataModel
-    , height : Int
     , width : Int
+    , height : Int
+    , margin : Int
     , range : ( Float, Float )
+    , min : Float
+    , max : Float
+    , ticks : Int
+    , partLeft : Int
+    , partRight : Int
+    , partAbove : Int
+    , partBelow : Int
+    , title : String
+    , vertTitle : String
+    , horiTitle : String
     }
 
 type alias BarDataModel =

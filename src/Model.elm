@@ -80,6 +80,13 @@ type alias BubbleChartModel =
   , rangeHori : (Float, Float)
   , rangeVert : (Float, Float)
   , margin : Int
+  , partLeft : Int
+  , partRight : Int
+  , partAbove : Int
+  , partBelow : Int
+  , title : String
+  , vertTitle : String
+  , horiTitle : String
   , bubbleSize : Float
   , ticksVertical : Int
   , ticksHorizontal : Int

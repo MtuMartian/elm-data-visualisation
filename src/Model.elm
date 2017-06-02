@@ -10,12 +10,14 @@ init =
     { barGraphs = Dict.empty
     , pieCharts = Dict.empty
     , boxPlots = Dict.empty
+    , bubbleCharts = Dict.empty
     }
 
 type alias ChartModel =
     { barGraphs : Dict String BarModel
     , pieCharts : Dict String PieModel
     , boxPlots : Dict String BoxPlotModel
+    , bubbleCharts : Dict String BubbleChartModel
     }
 
 type alias PieModel =
@@ -68,4 +70,26 @@ type alias BoxPlotModel =
 type alias BoxDataModel =
   { id : Int
   , value : Float
+  }
+
+type alias BubbleChartModel =
+  { id : String
+  , data : List BubbleDataModel
+  , width : Int
+  , height : Int
+  , rangeHori : (Float, Float)
+  , rangeVert : (Float, Float)
+  , margin : Int
+  , bubbleSize : Float
+  , ticksVertical : Int
+  , ticksHorizontal : Int
+  }
+
+type alias BubbleDataModel =
+  { id : Int
+  , value : Float
+  , valueHori : Float
+  , valueVert : Float
+  , label : String
+  , isHighlighted : Bool
   }

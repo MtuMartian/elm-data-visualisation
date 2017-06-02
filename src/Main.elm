@@ -3,12 +3,13 @@ module Main exposing (..)
 import CSS exposing (box)
 import Html exposing (Html, div, text, program)
 import Html.Attributes exposing (style)
-import Model exposing (BarModel, BarDataModel, ChartModel, init, PieModel, PieDataModel, BoxPlotModel, BoxDataModel)
+import Model exposing (..)
 import Msgs exposing (..)
 import BarGraph exposing (view, defaultModelWithData)
 import ChartingMessages exposing (..)
 import BoxPlot exposing (view)
 import PieChart exposing (view)
+import BubbleChart exposing (view)
 import Update exposing (chartUpdate)
 
 --import Svg exposing (..)
@@ -44,7 +45,7 @@ view model =
         [ BarGraph.view testData2 [ Props.title "Different title", Props.margin "8", horiAxisTitle "STUFFS", Props.max "15", Props.min "0" ] (1000, 600) model.mdl "1"
         , BarGraph.view testData [ Props.title "Second Data Set", Props.margin "16"] (1000, 300) model.mdl "2"
         , PieChart.view testData3 model.mdl "1"
-        , BoxPlot.view testData4 model.mdl "1"
+        , BubbleChart.view testData4 [ Props.margin "5" ] (600, 600) model.mdl "1"
         , textWithBox
         ]
 
@@ -106,12 +107,12 @@ testData3 =
     , { id = 4, value = 8, label = "p4", isHighlighted = False }
     ]
 
-testData4 : List BoxDataModel
+testData4 : List BubbleDataModel
 testData4 =
-    [ { id = 1, value = 2 }
-    , { id = 2, value = 4 }
-    , { id = 3, value = 6 }
-    , { id = 4, value = 8 }
+    [ { id = 1, value = 2, valueHori = 1, valueVert = 4, label = "d1", isHighlighted = False}
+    , { id = 2, value = 4, valueHori = 1, valueVert = 10, label = "d2", isHighlighted = False}
+    , { id = 3, value = 6, valueHori = 5, valueVert = 7, label = "d3", isHighlighted = False}
+    , { id = 4, value = 8, valueHori = 2, valueVert = 6, label = "d4", isHighlighted = False}
     ]
 
 

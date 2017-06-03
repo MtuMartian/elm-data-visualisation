@@ -45,7 +45,7 @@ view model =
         [ BarGraph.view testData2 [ Props.title "Different title", Props.margin "8", horiAxisTitle "STUFFS", Props.max "15", Props.min "0" ] (1000, 600) model.mdl "1"
         , BarGraph.view testData [ Props.title "Second Data Set", Props.margin "16"] (1000, 300) model.mdl "2"
         , PieChart.view testData3 model.mdl "1"
-        , BubbleChart.view testData4 [ Props.margin "5", Props.partitionLeft "240" ] (1200, 600) model.mdl "1"
+        , BubbleChart.view testData4 [ Props.margin "5", Props.partitionLeft "240", Props.bubbleSize "20" ] (1200, 600) model.mdl "1"
         , textWithBox
         ]
 

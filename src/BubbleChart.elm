@@ -12,7 +12,7 @@ import ChartingMessages exposing (..)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
 import Svg.Events as Events exposing (onMouseOver, onMouseOut)
-import SvgViews exposing (label)
+import SvgViews exposing (label, boxedForeignObject)
 import Properties exposing (..)
 import Util exposing (tupleToDict)
 
@@ -85,7 +85,7 @@ axes model =
   ++
   (titles model)
   ++
-  (bubbles model 0 [])
+  (bubbles model (median model.data) 0 [])
   )
 
 titles : BubbleChartModel -> List (Svg Msg)
@@ -224,8 +224,8 @@ vertCrossSections model iter =
         []
       ] ++ (vertCrossSections model (iter + 1))
 
-bubbles : BubbleChartModel -> Int -> List (Svg Msg) -> List (Svg Msg)
-bubbles model iter infoBoxes =
+bubbles : BubbleChartModel -> Float -> Int -> List (Svg Msg) -> List (Svg Msg)
+bubbles model med iter infoBoxes =
   if iter >= (List.length model.data) then
     infoBoxes
   else
@@ -261,15 +261,24 @@ bubbles model iter infoBoxes =
             bubbleX = bubbleXF |> toString
             bubbleY = bubbleYF |> toString
 
-            radiusMod =
+            highlightMod =
               if bubble.isHighlighted then
-                2
+                3
               else
-                1
+                0
 
-            bubbleRadius = model.bubbleSize * radiusMod |> toString
+            radiusMod =
+              bubble.value / med
 
-            infoBox = label bubbleXF bubbleYF bubble.label (toString bubble.value)
+            bubbleRadiusF = model.bubbleSize * radiusMod + highlightMod
+            bubbleRadius = bubbleRadiusF |> toString
+
+            infoBox =
+              boxedForeignObject
+                (bubbleXF + bubbleRadiusF)
+                bubbleYF
+                (infoBoxElement bubble model.vertTitle model.horiTitle)
+              --label (bubbleXF + bubbleRadiusF) bubbleYF bubble.label (toString bubble.value)
 
             updatedInfoBoxes =
               if bubble.isHighlighted then
@@ -287,7 +296,80 @@ bubbles model iter infoBoxes =
                 , onMouseOut (Msgs.Msg_ (BubbleChartMouseOut bubble model.id))
                 ]
                 [ ]]
-            ++ (bubbles model (iter + 1) updatedInfoBoxes)
+            ++ (bubbles model med (iter + 1) updatedInfoBoxes)
             )
         Nothing ->
           []
+
+infoBoxElement : BubbleDataModel -> String -> String -> List (Html Msg)
+infoBoxElement bubble vertLabel horiLabel =
+  [ div
+      []
+      [ Html.b
+        []
+        [ Html.text (bubble.label ++ ": ")]
+        , toString bubble.value |> Html.text
+      ]
+  , div
+      []
+      [ Html.b
+          []
+          [ Html.text (vertLabel ++ ": ")]
+          , toString bubble.valueVert |> Html.text
+      ]
+  , div
+      []
+      [ Html.b
+          []
+          [ Html.text (horiLabel ++ ": ")]
+          , toString bubble.valueHori |> Html.text
+      ]
+  ]
+
+median : List BubbleDataModel -> Float
+median data =
+    if (List.length data) % 2 == 1 then
+        let
+            sorted =
+                List.sortBy .value data
+
+            index =
+                (List.length sorted) // 2
+
+            median =
+                Array.get index (Array.fromList sorted)
+        in
+            case median of
+                Just median ->
+                    median.value
+
+                Nothing ->
+                    0
+    else
+        let
+            sorted =
+                List.sortBy .value data
+
+            index1 =
+                (List.length sorted) // 2
+
+            index2 =
+                (List.length sorted) // 2 - 1
+
+            num1 =
+                Array.get index1 (Array.fromList sorted)
+
+            num2 =
+                Array.get index2 (Array.fromList sorted)
+        in
+            case num1 of
+                Just num1 ->
+                    case num2 of
+                        Just num2 ->
+                            ((num1.value + num2.value) / 2)
+
+                        Nothing ->
+                            0
+
+                Nothing ->
+                    0

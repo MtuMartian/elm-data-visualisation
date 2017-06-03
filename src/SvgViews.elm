@@ -22,3 +22,14 @@ label xCoor yCoor label value =
       , Html.text value
       ]
     ]
+
+boxedForeignObject : Float -> Float -> List (Html Msg) -> Svg Msg
+boxedForeignObject xCoor yCoor elem =
+  foreignObject
+    [ x (toString xCoor)
+    , y (toString yCoor)
+    ]
+    [ div
+      [ HAttr.style box ]
+      elem
+    ]

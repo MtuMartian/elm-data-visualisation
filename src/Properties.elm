@@ -35,3 +35,6 @@ partitionAbove amt = ("partitionAbove", amt)
 
 partitionBelow : String -> Property
 partitionBelow amt = ("partitionBelow", amt)
+
+bubbleSize : String -> Property
+bubbleSize amt = ("bubbleSize", amt)

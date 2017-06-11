@@ -9,6 +9,7 @@ import BarGraph exposing (view, defaultModelWithData)
 import ChartingMessages exposing (..)
 import BoxPlot exposing (view)
 import PieChart exposing (view)
+import LineChart exposing (view)
 import BubbleChart exposing (view)
 import Update exposing (chartUpdate)
 
@@ -46,6 +47,17 @@ view model =
         , BarGraph.view testData [ Props.title "Second Data Set", Props.margin "16"] (1000, 300) model.mdl "2"
         , PieChart.view testData3 model.mdl "1"
         , BubbleChart.view testData4 [ Props.margin "5", Props.partitionLeft "240", Props.bubbleSize "20" ] (1200, 600) model.mdl "1"
+        , LineChart.view
+          testData5
+          [ Props.partitionLeft "20"
+          , Props.partitionRight "20"
+          , Props.partitionAbove "20"
+          , Props.partitionBelow "20"
+          , Props.title "TITLE"
+          ]
+          (400, 400)
+          model.mdl
+          "1"
         , textWithBox
         ]
 
@@ -113,6 +125,14 @@ testData4 =
     , { id = 2, value = 4, valueHori = 1, valueVert = 10, label = "d2", isHighlighted = False}
     , { id = 3, value = 6, valueHori = 5, valueVert = 7, label = "d3", isHighlighted = False}
     , { id = 4, value = 8, valueHori = 2, valueVert = 6, label = "d4", isHighlighted = False}
+    ]
+
+testData5 : List LineDataModel
+testData5 =
+    [ { id = 1, valueX = 2, valueY = 4, label = "d1", isHighlighted = False}
+    , { id = 2, valueX = 4, valueY = 10, label = "d2", isHighlighted = False}
+    , { id = 3, valueX = 6, valueY = 7, label = "d3", isHighlighted = False}
+    , { id = 4, valueX = 8, valueY = 6, label = "d4", isHighlighted = False}
     ]
 
 

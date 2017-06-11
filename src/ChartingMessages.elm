@@ -10,7 +10,10 @@ type ChartMsg
     | PieChartMouseOut PieDataModel String
     | BubbleChartMouseOver BubbleDataModel String
     | BubbleChartMouseOut BubbleDataModel String
+    | LineChartMouseOver LineDataModel String
+    | LineChartMouseOut LineDataModel String
     | BarGraphCreated String BarModel
     | PieChartCreated String PieModel
     | BoxPlotCreated String BoxPlotModel
     | BubbleChartCreated String BubbleChartModel
+    | LineChartCreated String LineChartModel

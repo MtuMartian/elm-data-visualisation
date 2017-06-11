@@ -187,6 +187,66 @@ chartUpdate msg model =
               Nothing ->
                 ( model, Cmd.none )
 
+        LineChartMouseOver data id ->
+          let
+            lineModel =
+              Dict.get id model.lineCharts
+          in
+            case lineModel of
+              Just lineModel ->
+                let
+                  updatedData =
+                    List.map
+                      (\x ->
+                        if x.id == data.id then
+                          { x | isHighlighted = True }
+                        else
+                          x
+                      )
+                      lineModel.data
+
+                  updatedLineModel =
+                    { lineModel | data = updatedData }
+
+                  updatedDict =
+                    Dict.insert id updatedLineModel model.lineCharts
+
+                in
+                  ( { model | lineCharts = updatedDict }, Cmd.none )
+
+              Nothing ->
+                ( model, Cmd.none )
+
+        LineChartMouseOut data id ->
+          let
+            lineModel =
+              Dict.get id model.lineCharts
+          in
+            case lineModel of
+              Just lineModel ->
+                let
+                  updatedData =
+                    List.map
+                      (\x ->
+                        if x.id == data.id then
+                          { x | isHighlighted = False }
+                        else
+                          x
+                      )
+                      lineModel.data
+
+                  updatedLineModel =
+                    { lineModel | data = updatedData }
+
+                  updatedDict =
+                    Dict.insert id updatedLineModel model.lineCharts
+
+                in
+                  ( { model | lineCharts = updatedDict }, Cmd.none )
+
+              Nothing ->
+                ( model, Cmd.none )
+
         BarGraphCreated id barModel ->
             let
                 updatedDict =
@@ -211,3 +271,9 @@ chartUpdate msg model =
                     Dict.insert id bubbleChartModel model.bubbleCharts
             in
                 ( { model | bubbleCharts = updatedDict }, Cmd.none )
+
+        LineChartCreated id lineChartModel ->
+            let updatedDict =
+                    Dict.insert id lineChartModel model.lineCharts
+            in
+                ( { model | lineCharts = updatedDict }, Cmd.none )

@@ -11,6 +11,7 @@ init =
     , pieCharts = Dict.empty
     , boxPlots = Dict.empty
     , bubbleCharts = Dict.empty
+    , lineCharts = Dict.empty
     }
 
 type alias ChartModel =
@@ -18,6 +19,7 @@ type alias ChartModel =
     , pieCharts : Dict String PieModel
     , boxPlots : Dict String BoxPlotModel
     , bubbleCharts : Dict String BubbleChartModel
+    , lineCharts : Dict String LineChartModel
     }
 
 type alias PieModel =
@@ -97,6 +99,32 @@ type alias BubbleDataModel =
   , value : Float
   , valueHori : Float
   , valueVert : Float
+  , label : String
+  , isHighlighted : Bool
+  }
+
+type alias LineChartModel =
+  { id : String
+  , data : List LineDataModel
+  , width : Int
+  , height : Int
+  , rangeX : (Float, Float)
+  , rangeY : (Float, Float)
+  , partLeft : Int
+  , partRight : Int
+  , partAbove : Int
+  , partBelow : Int
+  , title : String
+  , titleX : String
+  , titleY : String
+  , ticksX : Int
+  , ticksY : Int
+  }
+
+type alias LineDataModel =
+  { id : Int
+  , valueX : Float
+  , valueY : Float
   , label : String
   , isHighlighted : Bool
   }

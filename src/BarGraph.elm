@@ -66,7 +66,8 @@ view data properties dimensions mdl id =
                     model =
                         defaultModelWithData data propertyDict id (Tuple.first dimensions) (Tuple.second dimensions)
                 in
-                    div [ onCreate (Msgs.Msg_ (BarGraphCreated id model)) ] []
+                    div [ onCreate (Msgs.Msg_ (BarGraphCreated id model)) ]
+                        []
 
 axes : BarModel -> List (Svg Msg)
 axes model =
